@@ -17,63 +17,50 @@
         html,
         body {
             height: 100%;
-            width: 100%;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-        }
-        body {
             font-family: 'Inter', sans-serif;
-            /* tailwindcss @apply은 빌드 도구 없으면 주석 처리하는 게 안전 */
-            /* @apply bg-gray-100 text-gray-800 flex flex-col min-h-screen; */
-            background-color: #f3f4f6; /* bg-gray-100 */
-            color: #1f2937; /* text-gray-800 */
+            background-color: #f3f4f6; /* Tailwind bg-gray-100 */
+            color: #1f2937; /* Tailwind text-gray-800 */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-        main {
-            /* @apply flex flex-col flex-grow; */
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            height: calc(100vh - 80px);
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-            /* @apply rounded-none shadow-lg md:rounded-lg; */
-            border-radius: 0;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -4px rgba(0, 0, 0, 0.1);
-            z-index: 1;
-            border: 2px solid red; /* 진단용 임시 테두리 */
-        }
         header {
-            /* @apply w-full max-w-full text-center px-4 pt-4 pb-2 bg-white shadow-md z-10; */
-            width: 100%;
-            max-width: 100%;
-            text-align: center;
-            padding: 1rem 1rem 0.5rem;
-            background-color: white;
-            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-            z-index: 10;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 0 1rem;
+            z-index: 10;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        #map {
+            flex-grow: 1;
+            width: 100%;
+            border: 2px solid red; /* 임시 테두리 */
+            border-radius: 0;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            z-index: 1;
         }
         #schedule-display {
-            /* @apply fixed bottom-0 left-0 right-0 max-h-1/2 p-6 bg-white shadow-2xl rounded-t-lg overflow-y-auto transform translate-y-full transition-transform duration-300 ease-in-out z-20; */
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             max-height: 50vh;
             padding: 1.5rem;
-            background-color: white;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            background: white;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.2);
             border-top-left-radius: 1rem;
             border-top-right-radius: 1rem;
             overflow-y: auto;
@@ -84,29 +71,36 @@
         #schedule-display.active {
             transform: translateY(0);
         }
-        /* Leaflet 팝업 스타일 */
         .leaflet-popup-content-wrapper {
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
+            border-radius: 0.5rem !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
         }
         .leaflet-popup-content {
-            padding: 1rem;
+            padding: 1rem !important;
+        }
+        #loading-indicator {
+            position: fixed;
+            inset: 0;
+            background: rgba(243,244,246,0.9); /* bg-gray-100 with opacity */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            border-radius: 0;
         }
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #3b82f6;
+            border-left-color: #3B82F6; /* Tailwind blue-500 */
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
         }
     </style>
 </head>
@@ -117,28 +111,16 @@
     </header>
     <main>
         <div id="map"></div>
-
         <div id="schedule-display">
             <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
             <div id="schedule-content" class="text-gray-700 text-sm"></div>
-            <button
-                id="close-schedule"
-                class="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-            >
-                닫기
-            </button>
+            <button id="close-schedule" class="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">닫기</button>
         </div>
-
-        <div
-            id="loading-indicator"
-            class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg fixed inset-0 bg-gray-100 bg-opacity-75 z-50"
-        >
-            <div class="loading-spinner mb-4"></div>
+        <div id="loading-indicator">
+            <div class="loading-spinner"></div>
             <p class="text-lg text-blue-500">지도 데이터를 로딩 중입니다...</p>
         </div>
     </main>
-
-    <!-- Leaflet JS -->
     <script
         src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nEFjKtuX5zK/R8V+7V/fW2sC9xJ+c1f9G1u7l6pYw="
@@ -154,110 +136,72 @@
 
         const busStops = [
             {
-                name: 'Pedestrian Gate (보행자 출입구)',
-                lat: 36.955,
-                lon: 127.035,
-                routes: { 'Blue Route': ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'] },
-                description: '메인 보행자 출입구 부근 정류장입니다.',
+                name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
+                routes: { "Blue Route": ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"] },
+                description: "메인 보행자 출입구 부근 정류장입니다."
             },
             {
-                name: 'Eighth Army HQ (미8군 사령부)',
-                lat: 36.95,
-                lon: 127.04,
-                routes: { 'Blue Route': ['08:05 AM', '09:05 AM', '10:05 AM', '11:05 AM', '12:05 PM'] },
-                description: '미8군 사령부 건물 앞 정류장입니다.',
+                name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
+                routes: { "Blue Route": ["08:05 AM", "09:05 AM", "10:05 AM", "11:05 AM", "12:05 PM"] },
+                description: "미8군 사령부 건물 앞 정류장입니다."
             },
             {
-                name: 'Main Exchange (PX)',
-                lat: 36.958,
-                lon: 127.042,
-                routes: { 'Blue Route': ['08:10 AM', '09:10 AM', '10:10 AM', '11:10 AM', '12:10 PM'] },
-                description: '메인 PX 쇼핑몰 앞 정류장입니다.',
+                name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
+                routes: { "Blue Route": ["08:10 AM", "09:10 AM", "10:10 AM", "11:10 AM", "12:10 PM"] },
+                description: "메인 PX 쇼핑몰 앞 정류장입니다."
             },
             {
-                name: 'Brian D. Allgood Army Community Hospital',
-                lat: 36.945,
-                lon: 127.03,
-                routes: { 'Purple Route': ['07:30 AM', '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM'] },
-                description: '병원 입구에 위치한 정류장입니다.',
+                name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
+                routes: { "Purple Route": ["07:30 AM", "08:30 AM", "09:30 AM", "10:30 AM", "11:30 AM"] },
+                description: "병원 입구에 위치한 정류장입니다."
             },
             {
-                name: 'Bus Terminal (버스 터미널)',
-                lat: 36.948,
-                lon: 127.0385,
-                routes: { 'All Routes': ['07:00 AM', '07:15 AM', '07:30 AM'] },
-                description: '기지 내 주요 버스 터미널입니다.',
-            },
+                name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
+                routes: { "All Routes": ["07:00 AM", "07:15 AM", "07:30 AM"] },
+                description: "기지 내 주요 버스 터미널입니다."
+            }
         ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const mapDiv = document.getElementById('map');
-            console.log('Map div dimensions on DOMContentLoaded:', mapDiv.offsetWidth, 'x', mapDiv.offsetHeight);
-
+        document.addEventListener('DOMContentLoaded', function() {
             try {
                 initMap();
             } catch (error) {
-                console.error('Failed to initialize map:', error);
-                loadingIndicator.classList.add('hidden');
-                const errorMessage = document.createElement('div');
-                errorMessage.className =
-                    'fixed inset-0 bg-red-100 bg-opacity-90 flex flex-col items-center justify-center text-red-700 text-lg font-bold p-4 rounded-lg z-50';
-                errorMessage.innerHTML =
-                    '<p>지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.</p><button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">새로고침</button>';
-                document.body.appendChild(errorMessage);
+                console.error("Failed to initialize map:", error);
+                showError();
             }
         });
 
         function initMap() {
-            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.style.display = 'flex';
 
-            const humphreysCenter = [36.9535, 127.0381];
+            const center = [36.9535, 127.0381];
 
-            map = L.map('map', {
-                zoomControl: false,
-            }).setView(humphreysCenter, 14);
+            map = L.map('map', { zoomControl: false }).setView(center, 14);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // HOT 스타일 OpenStreetMap 타일 레이어
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
                 maxZoom: 19,
             }).addTo(map);
 
             setTimeout(() => {
-                console.log(
-                    'setTimeout triggered. Map dimensions before invalidateSize:',
-                    map.getContainer().offsetWidth,
-                    'x',
-                    map.getContainer().offsetHeight
-                );
                 map.invalidateSize();
-                console.log(
-                    'invalidateSize called. Map dimensions after invalidateSize:',
-                    map.getContainer().offsetWidth,
-                    'x',
-                    map.getContainer().offsetHeight
-                );
-                loadingIndicator.classList.add('hidden');
-            }, 100);
+                loadingIndicator.style.display = 'none';
+            }, 200);
 
             map.on('load', () => {
-                console.log('Map "load" event fired.');
-                if (!loadingIndicator.classList.contains('hidden')) {
-                    loadingIndicator.classList.add('hidden');
-                    map.invalidateSize();
-                }
+                loadingIndicator.style.display = 'none';
             });
 
             map.on('tileerror', (e) => {
-                console.error('Map tile loading error:', e);
-                loadingIndicator.classList.add('hidden');
+                console.error('Tile loading error:', e);
+                loadingIndicator.style.display = 'none';
             });
 
-            busStops.forEach((stop) => {
+            busStops.forEach(stop => {
                 const marker = L.marker([stop.lat, stop.lon]).addTo(map);
-                marker.on('click', () => {
-                    displaySchedule(stop);
-                });
                 marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
+                marker.on('click', () => displaySchedule(stop));
             });
 
             map.on('touchstart', () => {
@@ -268,15 +212,12 @@
 
         function displaySchedule(stop) {
             scheduleTitle.textContent = `${stop.name} 시간표`;
-            let contentHtml = `<p class="mb-2">${stop.description}</p>`;
-            contentHtml += `<ul class="list-disc pl-5">`;
+            let html = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
             for (const route in stop.routes) {
-                contentHtml += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
+                html += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
             }
-            contentHtml += `</ul>`;
-            contentHtml += `<p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
-            scheduleContent.innerHTML = contentHtml;
-
+            html += `</ul><p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
+            scheduleContent.innerHTML = html;
             scheduleDisplay.classList.add('active');
         }
 
@@ -285,10 +226,17 @@
         });
 
         window.addEventListener('resize', () => {
-            if (map) {
-                map.invalidateSize();
-            }
+            if (map) map.invalidateSize();
         });
+
+        function showError() {
+            const errDiv = document.createElement('div');
+            errDiv.className = 'fixed inset-0 bg-red-100 bg-opacity-90 flex flex-col items-center justify-center text-red-700 text-lg font-bold p-4 rounded-lg z-50';
+            errDiv.innerHTML = `<p>지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.</p>
+            <button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">새로고침</button>`;
+            document.body.appendChild(errDiv);
+            loadingIndicator.style.display = 'none';
+        }
     </script>
 </body>
 </html>
