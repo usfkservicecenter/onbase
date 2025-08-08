@@ -6,47 +6,51 @@
     <title>OnBase USAG Humphreys 셔틀 버스</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS -->
+
+    <!-- Leaflet CSS (integrity, crossorigin 제거) -->
     <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAo9TxxGQQH/StazmkNww7HLzmCzt3XPxqrFLhFE="
-        crossorigin=""
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
     <style>
-        html,
-        body {
+        html, body {
             height: 100%;
             width: 100%;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
         }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* bg-gray-100 */
-            color: #1f2937; /* text-gray-800 */
+            background-color: #f3f4f6;
+            color: #1f2937;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
+
         main {
             flex-grow: 1;
             height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
         }
+
         #map {
-            height: 100%;
+            flex-grow: 1;
             width: 100%;
-            border: 2px solid red; /* 진단용 */
+            border: 2px solid red; /* 진단용 테두리 */
             z-index: 1;
         }
+
         header {
             width: 100%;
             max-width: 100%;
             text-align: center;
-            padding: 1rem 1rem 0.5rem 1rem;
+            padding: 1rem;
             background-color: white;
-            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             height: 80px;
             display: flex;
             flex-direction: column;
@@ -54,6 +58,7 @@
             align-items: center;
             z-index: 10;
         }
+
         #schedule-display {
             position: fixed;
             bottom: 0;
@@ -62,31 +67,52 @@
             max-height: 50vh;
             padding: 1.5rem;
             background-color: white;
-            box-shadow: 0 -5px 15px rgb(0 0 0 / 0.3);
-            border-radius: 1rem 1rem 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
             overflow-y: auto;
             transform: translateY(100%);
             transition: transform 0.3s ease-in-out;
             z-index: 20;
         }
+
         #schedule-display.active {
             transform: translateY(0);
         }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .leaflet-popup-content {
+            padding: 1rem;
+        }
+
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #3b82f6;
+            border-left-color: #3B82F6;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+
+        #loading-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: rgba(243,244,246,0.9);
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            border-radius: 0.5rem;
         }
     </style>
 </head>
@@ -102,28 +128,17 @@
         <div id="schedule-display">
             <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
             <div id="schedule-content" class="text-gray-700 text-sm"></div>
-            <button
-                id="close-schedule"
-                class="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-            >
-                닫기
-            </button>
+            <button id="close-schedule" class="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">닫기</button>
         </div>
 
-        <div
-            id="loading-indicator"
-            class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg fixed inset-0 bg-gray-100 bg-opacity-75 z-50"
-        >
+        <div id="loading-indicator">
             <div class="loading-spinner mb-4"></div>
             <p class="text-lg text-blue-500">지도 데이터를 로딩 중입니다...</p>
         </div>
     </main>
 
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nEFjKtuX5zK/R8V+7V/fW2sC9xJ+c1f9G1u7l6pYw="
-        crossorigin=""
-    ></script>
+    <!-- Leaflet JS (integrity, crossorigin 제거) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
         let map;
@@ -135,96 +150,84 @@
 
         const busStops = [
             {
-                name: 'Pedestrian Gate (보행자 출입구)',
-                lat: 36.955,
-                lon: 127.035,
-                routes: { 'Blue Route': ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'] },
-                description: '메인 보행자 출입구 부근 정류장입니다.',
+                name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
+                routes: { "Blue Route": ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"] },
+                description: "메인 보행자 출입구 부근 정류장입니다."
             },
             {
-                name: 'Eighth Army HQ (미8군 사령부)',
-                lat: 36.95,
-                lon: 127.04,
-                routes: { 'Blue Route': ['08:05 AM', '09:05 AM', '10:05 AM', '11:05 AM', '12:05 PM'] },
-                description: '미8군 사령부 건물 앞 정류장입니다.',
+                name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
+                routes: { "Blue Route": ["08:05 AM", "09:05 AM", "10:05 AM", "11:05 AM", "12:05 PM"] },
+                description: "미8군 사령부 건물 앞 정류장입니다."
             },
             {
-                name: 'Main Exchange (PX)',
-                lat: 36.958,
-                lon: 127.042,
-                routes: { 'Blue Route': ['08:10 AM', '09:10 AM', '10:10 AM', '11:10 AM', '12:10 PM'] },
-                description: '메인 PX 쇼핑몰 앞 정류장입니다.',
+                name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
+                routes: { "Blue Route": ["08:10 AM", "09:10 AM", "10:10 AM", "11:10 AM", "12:10 PM"] },
+                description: "메인 PX 쇼핑몰 앞 정류장입니다."
             },
             {
-                name: 'Brian D. Allgood Army Community Hospital',
-                lat: 36.945,
-                lon: 127.03,
-                routes: { 'Purple Route': ['07:30 AM', '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM'] },
-                description: '병원 입구에 위치한 정류장입니다.',
+                name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
+                routes: { "Purple Route": ["07:30 AM", "08:30 AM", "09:30 AM", "10:30 AM", "11:30 AM"] },
+                description: "병원 입구에 위치한 정류장입니다."
             },
             {
-                name: 'Bus Terminal (버스 터미널)',
-                lat: 36.948,
-                lon: 127.0385,
-                routes: { 'All Routes': ['07:00 AM', '07:15 AM', '07:30 AM'] },
-                description: '기지 내 주요 버스 터미널입니다.',
-            },
+                name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
+                routes: { "All Routes": ["07:00 AM", "07:15 AM", "07:30 AM"] },
+                description: "기지 내 주요 버스 터미널입니다."
+            }
         ];
 
-        document.addEventListener('DOMContentLoaded', function () {
-            initMap();
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                initMap();
+            } catch (error) {
+                console.error("Failed to initialize map:", error);
+                loadingIndicator.style.display = 'none';
+                alert("지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.");
+            }
         });
 
         function initMap() {
-            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.style.display = 'flex';
 
             const humphreysCenter = [36.9535, 127.0381];
 
-            map = L.map('map', {
-                zoomControl: false,
-                maxBounds: [
-                    [36.945, 127.02], // 남서쪽 경계 (위도, 경도)
-                    [36.965, 127.06], // 북동쪽 경계
-                ],
-                maxBoundsViscosity: 1.0, // 경계 밖으로는 절대 못 나가도록
-            }).setView(humphreysCenter, 14);
+            map = L.map('map', { zoomControl: false }).setView(humphreysCenter, 14);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
             }).addTo(map);
-
-            busStops.forEach((stop) => {
-                const marker = L.marker([stop.lat, stop.lon]).addTo(map);
-                marker.on('click', function () {
-                    displaySchedule(stop);
-                });
-                marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
-            });
-
-            map.on('touchstart', function () {
-                map.closePopup();
-                scheduleDisplay.classList.remove('active');
-            });
 
             setTimeout(() => {
                 map.invalidateSize();
-                loadingIndicator.classList.add('hidden');
+                loadingIndicator.style.display = 'none';
             }, 100);
+
+            map.on('tileerror', (e) => {
+                console.error('Map tile loading error:', e);
+                loadingIndicator.style.display = 'none';
+            });
+
+            busStops.forEach(stop => {
+                const marker = L.marker([stop.lat, stop.lon]).addTo(map);
+                marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
+                marker.on('click', () => displaySchedule(stop));
+            });
+
+            map.on('touchstart', () => {
+                map.closePopup();
+                scheduleDisplay.classList.remove('active');
+            });
         }
 
         function displaySchedule(stop) {
             scheduleTitle.textContent = `${stop.name} 시간표`;
-            let contentHtml = `<p class="mb-2">${stop.description}</p>`;
-            contentHtml += `<ul class="list-disc pl-5">`;
+            let contentHtml = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
             for (const route in stop.routes) {
                 contentHtml += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
             }
-            contentHtml += `</ul>`;
-            contentHtml += `<p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
+            contentHtml += `</ul><p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
             scheduleContent.innerHTML = contentHtml;
-
             scheduleDisplay.classList.add('active');
         }
 
