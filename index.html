@@ -1,110 +1,128 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>OnBase USAG Humphreys 셔틀 버스</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAo9TxxGQQH/StazmkNww7HLzmCzt3XPxqrFLhFE="
-      crossorigin=""
-    />
-    <style>
-      html,
-      body {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>OnBase USAG Humphreys 셔틀 버스</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAo9TxxGQQH/StazmkNww7HLzmCzt3XPxqrFLhFE="
+    crossorigin=""
+  />
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6; /* Tailwind bg-gray-100 */
+      color: #1f2937; /* Tailwind text-gray-800 */
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      width: 100%;
+      max-width: 100%;
+      text-align: center;
+      padding: 1rem 1rem 0.5rem 1rem;
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+      z-index: 10;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 80px);
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+      border: 2px solid red; /* 진단용 테두리 */
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      border-radius: 0;
+      z-index: 1;
+    }
+    #schedule-display {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 50vh;
+      padding: 1.5rem;
+      background-color: #fff;
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 20;
+    }
+    #schedule-display.active {
+      transform: translateY(0);
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+    .leaflet-popup-content {
+      padding: 1rem;
+    }
+    .loading-spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #3b82f6;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
       }
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f3f4f6; /* Tailwind bg-gray-100 */
-        color: #1f2937; /* Tailwind text-gray-800 */
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
+      100% {
+        transform: rotate(360deg);
       }
-      main {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 80px);
-      }
-      #map {
-        height: 100%;
-        width: 100%;
-        border: 2px solid red; /* 진단용 */
-        z-index: 1;
-        border-radius: 0;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      }
-      header {
-        width: 100%;
-        max-width: 100%;
-        text-align: center;
-        padding: 1rem 1rem 0.5rem 1rem;
-        background: white;
-        box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-        z-index: 10;
-        height: 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-      #schedule-display {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        max-height: 50vh;
-        padding: 1.5rem;
-        background: white;
-        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-        border-top-left-radius: 1rem;
-        border-top-right-radius: 1rem;
-        overflow-y: auto;
-        transform: translateY(100%);
-        transition: transform 0.3s ease-in-out;
-        z-index: 20;
-      }
-      #schedule-display.active {
-        transform: translateY(0);
-      }
-      .leaflet-popup-content-wrapper {
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
-      }
-      .leaflet-popup-content {
-        padding: 1rem;
-      }
-      .loading-spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #3b82f6;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
+    }
+    #loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-color: rgba(243, 244, 246, 0.9);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+    }
+    #loading-indicator.hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1 class="text-2xl font-bold text-blue-700">OnBase</h1>
     <p class="text-gray-600 text-sm mt-1">USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.</p>
   </header>
+
   <main>
     <div id="map"></div>
 
@@ -119,11 +137,8 @@
       </button>
     </div>
 
-    <div
-      id="loading-indicator"
-      class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg fixed inset-0 bg-gray-100 bg-opacity-75 z-50"
-    >
-      <div class="loading-spinner mb-4"></div>
+    <div id="loading-indicator" class="">
+      <div class="loading-spinner"></div>
       <p class="text-lg text-blue-500">지도 데이터를 로딩 중입니다...</p>
     </div>
   </main>
@@ -133,6 +148,7 @@
     integrity="sha256-20nEFjKtuX5zK/R8V+7V/fW2sC9xJ+c1f9G1u7l6pYw="
     crossorigin=""
   ></script>
+
   <script>
     let map;
     const scheduleDisplay = document.getElementById('schedule-display');
@@ -146,116 +162,68 @@
         name: 'Pedestrian Gate (보행자 출입구)',
         lat: 36.955,
         lon: 127.035,
-        routes: {
-          'Blue Route': ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'],
-        },
+        routes: { 'Blue Route': ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'] },
         description: '메인 보행자 출입구 부근 정류장입니다.',
       },
       {
         name: 'Eighth Army HQ (미8군 사령부)',
         lat: 36.95,
         lon: 127.04,
-        routes: {
-          'Blue Route': ['08:05 AM', '09:05 AM', '10:05 AM', '11:05 AM', '12:05 PM'],
-        },
+        routes: { 'Blue Route': ['08:05 AM', '09:05 AM', '10:05 AM', '11:05 AM', '12:05 PM'] },
         description: '미8군 사령부 건물 앞 정류장입니다.',
       },
       {
         name: 'Main Exchange (PX)',
         lat: 36.958,
         lon: 127.042,
-        routes: {
-          'Blue Route': ['08:10 AM', '09:10 AM', '10:10 AM', '11:10 AM', '12:10 PM'],
-        },
+        routes: { 'Blue Route': ['08:10 AM', '09:10 AM', '10:10 AM', '11:10 AM', '12:10 PM'] },
         description: '메인 PX 쇼핑몰 앞 정류장입니다.',
       },
       {
         name: 'Brian D. Allgood Army Community Hospital',
         lat: 36.945,
         lon: 127.03,
-        routes: {
-          'Purple Route': ['07:30 AM', '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM'],
-        },
+        routes: { 'Purple Route': ['07:30 AM', '08:30 AM', '09:30 AM', '10:30 AM', '11:30 AM'] },
         description: '병원 입구에 위치한 정류장입니다.',
       },
       {
         name: 'Bus Terminal (버스 터미널)',
         lat: 36.948,
         lon: 127.0385,
-        routes: {
-          'All Routes': ['07:00 AM', '07:15 AM', '07:30 AM'],
-        },
+        routes: { 'All Routes': ['07:00 AM', '07:15 AM', '07:30 AM'] },
         description: '기지 내 주요 버스 터미널입니다.',
       },
     ];
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const mapDiv = document.getElementById('map');
-      console.log('Map div dimensions on DOMContentLoaded:', mapDiv.offsetWidth, 'x', mapDiv.offsetHeight);
-      try {
-        initMap();
-      } catch (error) {
-        console.error('Failed to initialize map:', error);
-        loadingIndicator.classList.add('hidden');
-        const errorMessage = document.createElement('div');
-        errorMessage.className =
-          'fixed inset-0 bg-red-100 bg-opacity-90 flex flex-col items-center justify-center text-red-700 text-lg font-bold p-4 rounded-lg z-50';
-        errorMessage.innerHTML =
-          '<p>지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.</p><button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">새로고침</button>';
-        document.body.appendChild(errorMessage);
-      }
-    });
 
     function initMap() {
       loadingIndicator.classList.remove('hidden');
 
       const humphreysCenter = [36.9535, 127.0381];
-      map = L.map('map', {
-        zoomControl: false,
-      }).setView(humphreysCenter, 14);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      map = L.map('map', { zoomControl: false }).setView(humphreysCenter, 14);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution:
-          '&copy; <a href="https://carto.com/attributions">CARTO</a> contributors &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
-      }).addTo(map);
+      })
+        .on('tileerror', function (e) {
+          console.error('Tile loading error:', e);
+          loadingIndicator.classList.add('hidden');
+        })
+        .addTo(map);
 
       setTimeout(() => {
-        console.log(
-          'setTimeout triggered. Map dimensions before invalidateSize:',
-          map.getContainer().offsetWidth,
-          'x',
-          map.getContainer().offsetHeight
-        );
         map.invalidateSize();
-        console.log(
-          'invalidateSize called. Map dimensions after invalidateSize:',
-          map.getContainer().offsetWidth,
-          'x',
-          map.getContainer().offsetHeight
-        );
         loadingIndicator.classList.add('hidden');
-      }, 100);
+      }, 200);
 
-      map.on('load', () => {
-        console.log('Map "load" event fired.');
-        if (!loadingIndicator.classList.contains('hidden')) {
-          loadingIndicator.classList.add('hidden');
-          map.invalidateSize();
-        }
-      });
-
-      map.on('tileerror', e => {
-        console.error('Map tile loading error:', e);
-        loadingIndicator.classList.add('hidden');
-      });
-
-      busStops.forEach(stop => {
+      busStops.forEach((stop) => {
         const marker = L.marker([stop.lat, stop.lon]).addTo(map);
+        marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
         marker.on('click', () => {
           displaySchedule(stop);
         });
-        marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
       });
 
       map.on('touchstart', () => {
@@ -266,13 +234,11 @@
 
     function displaySchedule(stop) {
       scheduleTitle.textContent = `${stop.name} 시간표`;
-      let contentHtml = `<p class="mb-2">${stop.description}</p>`;
-      contentHtml += `<ul class="list-disc pl-5">`;
+      let contentHtml = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
       for (const route in stop.routes) {
         contentHtml += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
       }
-      contentHtml += `</ul>`;
-      contentHtml += `<p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
+      contentHtml += '</ul><p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>';
       scheduleContent.innerHTML = contentHtml;
       scheduleDisplay.classList.add('active');
     }
@@ -284,6 +250,21 @@
     window.addEventListener('resize', () => {
       if (map) {
         map.invalidateSize();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        initMap();
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
+        loadingIndicator.classList.add('hidden');
+        const errorMessage = document.createElement('div');
+        errorMessage.className =
+          'fixed inset-0 bg-red-100 bg-opacity-90 flex flex-col items-center justify-center text-red-700 text-lg font-bold p-4 rounded-lg z-50';
+        errorMessage.innerHTML =
+          '<p>지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.</p><button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">새로고침</button>';
+        document.body.appendChild(errorMessage);
       }
     });
   </script>
