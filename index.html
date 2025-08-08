@@ -4,316 +4,255 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>OnBase USAG Humphreys 셔틀 버스</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN (개발용) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS (integrity, crossorigin 제거) -->
-    <link
-        rel="stylesheet"
+
+    <!-- Leaflet CSS (무결성 속성 제거하여 오류 방지) -->
+    <link 
+        rel="stylesheet" 
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        crossorigin=""
     />
     <style>
-        html,
-        body {
+        html, body {
             height: 100%;
             width: 100%;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             overflow-x: hidden;
-        }
-        body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Tailwind gray-100 */
-            color: #1f2937; /* Tailwind gray-800 */
+            background-color: #f3f4f6; /* Tailwind bg-gray-100 */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
-        main {
-            flex-grow: 1;
-            height: calc(100vh - 80px);
-            display: flex;
-            flex-direction: column;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-            border-radius: 0;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-                        0 4px 6px -2px rgb(0 0 0 / 0.05);
-            z-index: 1;
-            /* 삭제: border: 2px solid red; */
-        }
         header {
-            width: 100%;
-            max-width: 100%;
-            text-align: center;
-            padding: 1rem 1rem 0.5rem 1rem;
-            background: white;
-            box-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
             height: 80px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
         }
+        main {
+            flex-grow: 1;
+            position: relative;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+            border-radius: 0;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
         #schedule-display {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-height: 50vh;
-            padding: 1.5rem;
+            bottom: 0; left: 0; right: 0;
+            max-height: 50%;
             background: white;
-            box-shadow: 0 -10px 15px -3px rgb(0 0 0 / 0.1),
-                        0 -4px 6px -2px rgb(0 0 0 / 0.05);
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
             overflow-y: auto;
             transform: translateY(100%);
             transition: transform 0.3s ease-in-out;
             z-index: 20;
+            padding: 1.5rem;
         }
         #schedule-display.active {
             transform: translateY(0);
         }
-        .leaflet-popup-content-wrapper {
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-                        0 4px 6px -2px rgb(0 0 0 / 0.05);
+        #schedule-title {
+            font-weight: 600;
+            color: #2563eb; /* Tailwind blue-600 */
+            margin-bottom: 0.5rem;
         }
-        .leaflet-popup-content {
-            padding: 1rem;
+        #schedule-content {
+            color: #374151; /* Tailwind gray-700 */
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        #close-schedule {
+            margin-top: 1rem;
+            width: 100%;
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+        }
+        #close-schedule:hover {
+            background-color: #2563eb; /* blue-600 */
         }
         .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #3B82F6;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: #3b82f6;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% {transform: rotate(0deg);}
+            100% {transform: rotate(360deg);}
+        }
+        #loading-indicator {
+            position: fixed;
+            inset: 0;
+            background: rgba(243, 244, 246, 0.95); /* Tailwind bg-gray-100 0.95 opacity */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
         }
     </style>
 </head>
 <body>
     <header>
         <h1 class="text-2xl font-bold text-blue-700">OnBase</h1>
-        <p class="text-gray-600 text-sm mt-1">
-            USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.
-        </p>
+        <p class="text-gray-600 text-sm mt-1">USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.</p>
     </header>
 
     <main>
         <div id="map"></div>
 
-        <div id="schedule-display">
-            <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
-            <div id="schedule-content" class="text-gray-700 text-sm"></div>
-            <button
-                id="close-schedule"
-                class="mt-4 px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-            >
-                닫기
-            </button>
+        <div id="schedule-display" aria-live="polite" aria-hidden="true">
+            <h2 id="schedule-title"></h2>
+            <div id="schedule-content"></div>
+            <button id="close-schedule" aria-label="시간표 닫기">닫기</button>
         </div>
 
-        <div
-            id="loading-indicator"
-            class="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-lg fixed inset-0 bg-gray-100 bg-opacity-75 z-50"
-        >
-            <div class="loading-spinner mb-4"></div>
-            <p class="text-lg text-blue-500">지도 데이터를 로딩 중입니다...</p>
+        <div id="loading-indicator">
+            <div class="loading-spinner" role="status" aria-label="Loading"></div>
+            <p class="text-lg text-blue-500 mt-4">지도 데이터를 로딩 중입니다...</p>
         </div>
     </main>
 
-    <!-- Leaflet JS (integrity, crossorigin 제거) -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet JS (무결성 속성 제거) -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin="">
+    </script>
 
     <script>
         let map;
-        const scheduleDisplay = document.getElementById("schedule-display");
-        const scheduleTitle = document.getElementById("schedule-title");
-        const scheduleContent = document.getElementById("schedule-content");
-        const closeScheduleBtn = document.getElementById("close-schedule");
-        const loadingIndicator = document.getElementById("loading-indicator");
+        const scheduleDisplay = document.getElementById('schedule-display');
+        const scheduleTitle = document.getElementById('schedule-title');
+        const scheduleContent = document.getElementById('schedule-content');
+        const closeScheduleBtn = document.getElementById('close-schedule');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
-        // USAG Humphreys 영역만 포함하는 다각형 좌표 (대략적)
+        // Camp Humphreys 영역 좌표 (폴리곤) — 실제 좌표로 필요시 업데이트
         const campHumphreysBounds = [
-            [36.9445, 127.0220],
-            [36.9445, 127.0560],
-            [36.9605, 127.0560],
-            [36.9605, 127.0220],
+            [36.9474, 127.0100],
+            [36.9474, 127.0600],
+            [36.9700, 127.0600],
+            [36.9700, 127.0100]
         ];
 
-        // 버스 정류장 데이터
         const busStops = [
             {
-                name: "Pedestrian Gate (보행자 출입구)",
-                lat: 36.9550,
-                lon: 127.0350,
-                routes: {
-                    "Blue Route": [
-                        "08:00 AM",
-                        "09:00 AM",
-                        "10:00 AM",
-                        "11:00 AM",
-                        "12:00 PM",
-                    ],
-                },
-                description: "메인 보행자 출입구 부근 정류장입니다.",
+                name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
+                routes: { "Blue Route": ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"] },
+                description: "메인 보행자 출입구 부근 정류장입니다."
             },
             {
-                name: "Eighth Army HQ (미8군 사령부)",
-                lat: 36.9500,
-                lon: 127.0400,
-                routes: {
-                    "Blue Route": [
-                        "08:05 AM",
-                        "09:05 AM",
-                        "10:05 AM",
-                        "11:05 AM",
-                        "12:05 PM",
-                    ],
-                },
-                description: "미8군 사령부 건물 앞 정류장입니다.",
+                name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
+                routes: { "Blue Route": ["08:05 AM", "09:05 AM", "10:05 AM", "11:05 AM", "12:05 PM"] },
+                description: "미8군 사령부 건물 앞 정류장입니다."
             },
             {
-                name: "Main Exchange (PX)",
-                lat: 36.9580,
-                lon: 127.0420,
-                routes: {
-                    "Blue Route": [
-                        "08:10 AM",
-                        "09:10 AM",
-                        "10:10 AM",
-                        "11:10 AM",
-                        "12:10 PM",
-                    ],
-                },
-                description: "메인 PX 쇼핑몰 앞 정류장입니다.",
+                name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
+                routes: { "Blue Route": ["08:10 AM", "09:10 AM", "10:10 AM", "11:10 AM", "12:10 PM"] },
+                description: "메인 PX 쇼핑몰 앞 정류장입니다."
             },
             {
-                name: "Brian D. Allgood Army Community Hospital",
-                lat: 36.9450,
-                lon: 127.0300,
-                routes: {
-                    "Purple Route": [
-                        "07:30 AM",
-                        "08:30 AM",
-                        "09:30 AM",
-                        "10:30 AM",
-                        "11:30 AM",
-                    ],
-                },
-                description: "병원 입구에 위치한 정류장입니다.",
+                name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
+                routes: { "Purple Route": ["07:30 AM", "08:30 AM", "09:30 AM", "10:30 AM", "11:30 AM"] },
+                description: "병원 입구에 위치한 정류장입니다."
             },
             {
-                name: "Bus Terminal (버스 터미널)",
-                lat: 36.9480,
-                lon: 127.0385,
-                routes: {
-                    "All Routes": ["07:00 AM", "07:15 AM", "07:30 AM"],
-                },
-                description: "기지 내 주요 버스 터미널입니다.",
-            },
+                name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
+                routes: { "All Routes": ["07:00 AM", "07:15 AM", "07:30 AM"] },
+                description: "기지 내 주요 버스 터미널입니다."
+            }
         ];
 
-        document.addEventListener("DOMContentLoaded", function () {
-            try {
-                initMap();
-            } catch (error) {
-                console.error("Failed to initialize map:", error);
-                loadingIndicator.classList.add("hidden");
-                const errorMessage = document.createElement("div");
-                errorMessage.className =
-                    "fixed inset-0 bg-red-100 bg-opacity-90 flex flex-col items-center justify-center text-red-700 text-lg font-bold p-4 rounded-lg z-50";
-                errorMessage.innerHTML =
-                    '<p>지도를 로드하는 중 오류가 발생했습니다. 네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요.</p><button onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">새로고침</button>';
-                document.body.appendChild(errorMessage);
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
         });
 
         function initMap() {
-            loadingIndicator.classList.remove("hidden");
+            loadingIndicator.style.display = 'flex';
 
-            const humphreysCenter = [36.9535, 127.0381];
-
-            map = L.map("map", {
+            const center = [36.957, 127.035]; // Camp Humphreys 중심 좌표
+            map = L.map('map', {
                 zoomControl: false,
-                maxBounds: campHumphreysBounds,
-                maxBoundsViscosity: 1.0,
-            }).setView(humphreysCenter, 14);
+                maxZoom: 19,
+                minZoom: 13,
+                maxBounds: campHumphreysBounds
+            }).setView(center, 16);
 
-            L.tileLayer(
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {
-                    attribution:
-                        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    maxZoom: 19,
-                }
-            ).addTo(map);
-
-            // 캠프 험프리스 경계 폴리곤 (채우기, 테두리 없애서 깔끔하게)
-            L.polygon(campHumphreysBounds, {
-                color: "#00000000", // 테두리 투명
-                fillColor: "#3b82f6", // Tailwind 파란색 500
-                fillOpacity: 0.1,
-                interactive: false,
+            // OpenStreetMap @2x 고해상도 타일 (레티나 대응)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}@2x.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                detectRetina: true
             }).addTo(map);
 
-            // 버스 정류장 마커 표시
-            busStops.forEach((stop) => {
+            // Camp Humphreys 영역 폴리곤 (테두리 없이 fill만, 반투명)
+            const campPolygon = L.polygon(campHumphreysBounds, {
+                color: 'transparent',
+                fillColor: '#2563eb', // Tailwind blue-600
+                fillOpacity: 0.1,
+                interactive: false
+            }).addTo(map);
+
+            // 캠프 영역 밖 클릭 방지 (클릭시 아무 동작도 안함)
+            map.on('click', function(e) {
+                if (!campPolygon.getBounds().contains(e.latlng)) {
+                    map.closePopup();
+                    scheduleDisplay.classList.remove('active');
+                }
+            });
+
+            busStops.forEach(stop => {
                 const marker = L.marker([stop.lat, stop.lon]).addTo(map);
-                marker.on("click", function () {
-                    displaySchedule(stop);
-                });
+                marker.on('click', () => displaySchedule(stop));
                 marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
             });
 
-            map.on("touchstart", function () {
-                map.closePopup();
-                scheduleDisplay.classList.remove("active");
+            map.whenReady(() => {
+                loadingIndicator.style.display = 'none';
+                map.invalidateSize();
             });
 
-            setTimeout(() => {
-                map.invalidateSize();
-                loadingIndicator.classList.add("hidden");
-            }, 100);
+            // 닫기 버튼 이벤트
+            closeScheduleBtn.addEventListener('click', () => {
+                scheduleDisplay.classList.remove('active');
+            });
+
+            // 윈도우 리사이즈 시 지도 크기 조정
+            window.addEventListener('resize', () => {
+                if (map) map.invalidateSize();
+            });
         }
 
         function displaySchedule(stop) {
             scheduleTitle.textContent = `${stop.name} 시간표`;
-            let contentHtml = `<p class="mb-2">${stop.description}</p>`;
-            contentHtml += `<ul class="list-disc pl-5">`;
+            let html = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
             for (const route in stop.routes) {
-                contentHtml += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(
-                    ", "
-                )}</li>`;
+                html += `<li class="mb-1"><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
             }
-            contentHtml += `</ul>`;
-            contentHtml += `<p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
-            scheduleContent.innerHTML = contentHtml;
-
-            scheduleDisplay.classList.add("active");
+            html += `</ul><p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
+            scheduleContent.innerHTML = html;
+            scheduleDisplay.classList.add('active');
         }
-
-        closeScheduleBtn.addEventListener("click", () => {
-            scheduleDisplay.classList.remove("active");
-        });
-
-        window.addEventListener("resize", () => {
-            if (map) {
-                map.invalidateSize();
-            }
-        });
     </script>
 </body>
 </html>
