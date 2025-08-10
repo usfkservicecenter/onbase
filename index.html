@@ -155,8 +155,7 @@
     gates.forEach(g => L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name));
 
     /* ===== 라벨/검색 ===== */
-    const buildingMarkers = [];
-    let dataset = []; // {lat, lon, label, marker, visibleByFilter, name?}
+    let dataset = []; // {lat, lon, label, name, marker, visibleByFilter}
     const LABEL_ZOOM = 15;
 
     function normalize(s){ return (s ?? '').toString().trim(); }
@@ -165,16 +164,15 @@
       const q = normalize(document.getElementById('searchInput').value).toLowerCase();
       let results = [];
       dataset.forEach(it=>{
-        const ok = !q || it.label.toLowerCase().includes(q);
+        const ok = !q ||
+          it.label.toLowerCase().includes(q) ||
+          (it.name && it.name.toLowerCase().includes(q)); // 이름도 항상 검색
         it.visibleByFilter = ok;
         if (ok && q) results.push(it);
       });
       document.getElementById('resultCount').textContent = q ? `결과: ${results.length}개` : '';
 
-      // 라벨 표시 갱신
       updateBuildingLabels();
-
-      // 결과 패널 렌더
       renderResults(q ? results : []);
     }
 
@@ -226,7 +224,6 @@
         return;
       }
 
-      // 결과 너무 많으면 200개까지만 표시
       const MAX_SHOW = 200;
       const sliced = items.slice(0, MAX_SHOW)
         .sort((a,b)=> a.label.localeCompare(b.label, 'ko'));
@@ -239,11 +236,7 @@
           ${it.name ? `<span class="result-sub">${it.name}</span>` : ''}
         `;
         li.addEventListener('click', ()=>{
-          // 결과 클릭 시 이동 + 충분히 확대
           map.flyTo([it.lat, it.lon], Math.max(map.getZoom(), 17), { duration: 0.8 });
-          // 클릭 후 패널 접기(선택)
-          // document.getElementById('searchInput').value = '';
-          // applyFilters();
         });
         list.appendChild(li);
       });
