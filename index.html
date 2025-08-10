@@ -10,13 +10,18 @@
     html, body { height: 100%; margin: 0; }
     #map { height: 100%; }
     .building-label {
-      color: #6b7280;
-      font-size: 10px;
-      font-weight: 700;
-      text-shadow: 1px 1px 2px #fff;
-      white-space: nowrap;
-      pointer-events: none;
+      color: #6b7280; font-size: 10px; font-weight: 700;
+      text-shadow: 1px 1px 2px #fff; white-space: nowrap; pointer-events: none;
     }
+    /* locate 버튼 간단 스타일 */
+    .leaflet-control-locate {
+      background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .leaflet-control-locate button {
+      width: 34px; height: 34px; line-height: 34px; text-align: center;
+      border: none; background: transparent; cursor: pointer; font-size: 18px;
+    }
+    .leaflet-control-locate button:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
@@ -31,30 +36,29 @@
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
 
-    // ===== 서/북 끝단 확장 지점 =====
-    const westMostLon  = 126.9846803;           // 5901 (Driving Range)
-    const northMostLat = 36.9824546;            // 8710
+    // ===== 서/북 끝단 확장 포인트 =====
+    const westMostLon  = 126.9846803;   // 5901 (Driving Range)
+    const northMostLat = 36.9824546;    // 8710
 
-    // ===== bounds 계산 (남쪽 여유 ↑, 서쪽/북쪽 확장 반영) =====
+    // ===== bounds 계산 (남쪽 여유, 서/북 확장 반영) =====
     const lats = gates.map(g => g.lat);
     const lons = gates.map(g => g.lon);
-
     const minLatRaw = Math.min(...lats);
-    const maxLatRaw = Math.max(northMostLat, ...lats); // 북쪽은 8710까지
-    const minLonRaw = Math.min(westMostLon, ...lons);  // 서쪽은 5901까지
+    const maxLatRaw = Math.max(northMostLat, ...lats);
+    const minLonRaw = Math.min(westMostLon, ...lons);
     const maxLonRaw = Math.max(...lons);
 
-    const padN = 0.004;   // 북쪽 여유(약 440m)
-    const padS = 0.010;   // 남쪽 여유(Charlton 아래까지)
-    const padW = 0.003;   // 서쪽 여유
-    const padE = 0.003;   // 동쪽 여유
+    const padN = 0.004;  // 북쪽 여유
+    const padS = 0.010;  // 남쪽 여유
+    const padW = 0.003;  // 서쪽 여유
+    const padE = 0.003;  // 동쪽 여유
 
     const gateBounds = L.latLngBounds(
       [minLatRaw - padS, minLonRaw - padW],
       [maxLatRaw + padN, maxLonRaw + padE]
     );
 
-    // ===== 지도 (라이트 타일) =====
+    // ===== 지도 (라이트 타일 + 부드러운 경계) =====
     const map = L.map('map', {
       zoomControl: true,
       scrollWheelZoom: true,
@@ -62,7 +66,7 @@
       dragging: true,
       doubleClickZoom: true,
       maxBounds: gateBounds,
-      maxBoundsViscosity: 0.95   // 경계에서 부드럽게 멈춤(튕김 완화)
+      maxBoundsViscosity: 0.95
     });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -80,7 +84,7 @@
 
     // ===== 라벨 표시 제어 =====
     const buildingMarkers = [];
-    const LABEL_ZOOM = 15;
+    const LABEL_ZOOM = 15; // 15부터 표시
 
     function updateBuildingLabels() {
       const zoom = map.getZoom();
@@ -104,7 +108,6 @@
           const labelText =
             (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
             (b.name && String(b.name).trim()) || "";
-
           if (!labelText) return;
 
           const marker = L.marker([lat, lon], {
@@ -121,7 +124,47 @@
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
-    // 사파리 등에서 자동 비활성화됐을 경우 대비
+    // ===== 내 위치 찾기 버튼 (커스텀 컨트롤) =====
+    const userLayer = L.layerGroup().addTo(map);
+    let lastLocate = null;
+
+    const LocateControl = L.Control.extend({
+      onAdd: function () {
+        const container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
+        const btn = L.DomUtil.create('button', '', container);
+        btn.title = '내 위치 찾기';
+        btn.innerHTML = '📍';
+        // 지도 제스처와 충돌 방지
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(btn, 'click', (e) => {
+          e.preventDefault();
+          // 한 번 클릭 시 현재 위치로 이동
+          map.locate({
+            setView: true,
+            maxZoom: 18,
+            enableHighAccuracy: true,
+            watch: false
+          });
+        });
+        return container;
+      },
+      onRemove: function () {}
+    });
+    map.addControl(new LocateControl({ position: 'topleft' }));
+
+    map.on('locationfound', (e) => {
+      userLayer.clearLayers();
+      // 현재 위치 마커 + 정확도 원
+      L.circleMarker(e.latlng, { radius: 6 }).addTo(userLayer);
+      L.circle(e.latlng, { radius: e.accuracy }).addTo(userLayer);
+      lastLocate = e.latlng;
+    });
+
+    map.on('locationerror', (e) => {
+      alert('위치 접근 실패: ' + e.message + '\n(HTTPS 또는 localhost에서 테스트해 주세요)');
+    });
+
+    // 사파리 등에서 자동 비활성화 대비
     map.whenReady(() => {
       if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
       if (!map.options.touchZoom) map.touchZoom.enable();
