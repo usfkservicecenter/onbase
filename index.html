@@ -7,253 +7,216 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <style>
-    html, body {
-      height: 100%;
-      margin: 0; padding: 0;
-      overflow-x: hidden;
-    }
+    html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
     body {
       font-family: 'Inter', sans-serif;
-      background: #f3f4f6;
-      color: #374151;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      background: #f3f4f6; /* gray-100 */
+      color: #374151;      /* gray-800 */
+      display: flex; flex-direction: column; min-height: 100vh;
     }
     header {
-      background: white;
-      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-      height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 0 1rem;
-      z-index: 10;
-      position: relative;
+      background: white; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+      height: 80px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; padding: 0 1rem;
+      z-index: 10; position: relative;
     }
-    main {
-      flex-grow: 1;
-      height: calc(100vh - 80px);
-    }
+    main { flex-grow: 1; height: calc(100vh - 80px); }
     #map {
-      height: 100%;
-      width: 100%;
-      border-radius: 0.5rem;
-      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-      z-index: 1;
+      height: 100%; width: 100%; border: none; border-radius: 0.5rem;
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 1;
     }
+    /* 다크/라이트 전환 버튼 */
     #theme-toggle {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #3b82f6;
-      color: white;
-      padding: 0.3rem 0.6rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background-color 0.2s;
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      background: #3b82f6; color: white; padding: 0.35rem 0.7rem;
+      border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; font-weight: 500;
     }
-    #theme-toggle:hover {
-      background: #2563eb;
-    }
+    #theme-toggle:hover { background: #2563eb; }
+
+    /* 슬라이드 업 시간표 */
     #schedule-display {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      max-height: 50%;
-      background: white;
-      box-shadow: 0 -4px 20px rgb(0 0 0 / 0.15);
-      border-top-left-radius: 1rem;
-      border-top-right-radius: 1rem;
-      padding: 1.5rem;
-      overflow-y: auto;
-      transform: translateY(100%);
-      transition: transform 0.3s ease-in-out;
-      z-index: 20;
+      position: fixed; bottom: 0; left: 0; right: 0; max-height: 50%;
+      background: white; box-shadow: 0 -4px 20px rgb(0 0 0 / 0.15);
+      border-top-left-radius: 1rem; border-top-right-radius: 1rem;
+      padding: 1.5rem; overflow-y: auto; transform: translateY(100%);
+      transition: transform 0.3s ease-in-out; z-index: 20;
     }
-    #schedule-display.active {
-      transform: translateY(0);
-    }
+    #schedule-display.active { transform: translateY(0); }
     #close-schedule {
-      margin-top: 1rem;
-      width: 100%;
-      background-color: #3b82f6;
-      color: white;
-      padding: 0.5rem;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.2s;
+      margin-top: 1rem; width: 100%; background-color: #3b82f6; color: white;
+      padding: 0.5rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;
     }
-    #close-schedule:hover {
-      background-color: #2563eb;
-    }
+    #close-schedule:hover { background-color: #2563eb; }
     .leaflet-popup-content-wrapper {
       border-radius: 0.5rem !important;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
       padding: 1rem !important;
     }
+    /* 로딩 인디케이터 */
     .loading-spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #3B82F6;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
+      border: 4px solid rgba(0,0,0,0.1); border-left-color: #3B82F6;
+      border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
+    @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
     #loading-indicator {
-      position: fixed;
-      inset: 0;
-      background: rgba(243, 244, 246, 0.75);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 50;
-      border-radius: 0.5rem;
-      color: #3b82f6;
-      font-weight: 600;
-      font-size: 1.125rem;
+      position: fixed; inset: 0; background: rgba(243,244,246,0.75);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      z-index: 50; border-radius: 0.5rem; color: #3b82f6; font-weight: 600; font-size: 1.125rem;
+    }
+
+    /* 건물번호 라벨 스타일 (항상 보임) */
+    .building-label {
+      pointer-events: none; /* 라벨 클릭으로 지도 인터랙션 막지 않음 */
+    }
+    .building-label span {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 12px; font-weight: 700; line-height: 1;
+      background: rgba(255,255,255,0.85);
+      color: #111827; /* gray-900 */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      /* 라벨이 타일 위에서 잘 보이도록 약간의 대비 */
+    }
+    /* 다크 테마일 때 라벨 대비 조정 */
+    body.dark .building-label span {
+      background: rgba(17,24,39,0.85); /* gray-900 */
+      color: #f9fafb; /* gray-50 */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
     }
   </style>
 </head>
 <body>
-<header>
-  <h1 class="text-2xl font-bold text-blue-700">OnBase</h1>
-  <p class="text-gray-600 text-sm mt-1">USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.</p>
-  <button id="theme-toggle">Dark</button>
-</header>
-<main>
-  <div id="map"></div>
-  <div id="schedule-display">
-    <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
-    <div id="schedule-content" class="text-gray-700 text-sm"></div>
-    <button id="close-schedule">닫기</button>
-  </div>
-  <div id="loading-indicator">
-    <div class="loading-spinner"></div>
-    <p>지도 데이터를 로딩 중입니다...</p>
-  </div>
-</main>
+  <header>
+    <h1 class="text-2xl font-bold text-blue-700">OnBase</h1>
+    <p class="text-gray-600 text-sm mt-1">USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.</p>
+    <button id="theme-toggle" type="button" aria-label="테마 전환">Dark</button>
+  </header>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<script>
-  const scheduleDisplay = document.getElementById('schedule-display');
-  const scheduleTitle = document.getElementById('schedule-title');
-  const scheduleContent = document.getElementById('schedule-content');
-  const closeScheduleBtn = document.getElementById('close-schedule');
-  const loadingIndicator = document.getElementById('loading-indicator');
-  const themeToggle = document.getElementById('theme-toggle');
+  <main>
+    <div id="map"></div>
 
-  const busStops = [
-    { name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
-      routes: { "Blue Route": ["08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"] },
-      description: "메인 보행자 출입구 부근 정류장입니다."
-    },
-    { name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
-      routes: { "Blue Route": ["08:05 AM", "09:05 AM", "10:05 AM", "11:05 AM", "12:05 PM"] },
-      description: "미8군 사령부 건물 앞 정류장입니다."
-    },
-    { name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
-      routes: { "Blue Route": ["08:10 AM", "09:10 AM", "10:10 AM", "11:10 AM", "12:10 PM"] },
-      description: "메인 PX 쇼핑몰 앞 정류장입니다."
-    },
-    { name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
-      routes: { "Purple Route": ["07:30 AM", "08:30 AM", "09:30 AM", "10:30 AM", "11:30 AM"] },
-      description: "병원 입구에 위치한 정류장입니다."
-    },
-    { name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
-      routes: { "All Routes": ["07:00 AM", "07:15 AM", "07:30 AM"] },
-      description: "기지 내 주요 버스 터미널입니다."
-    }
-  ];
+    <div id="schedule-display">
+      <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
+      <div id="schedule-content" class="text-gray-700 text-sm"></div>
+      <button id="close-schedule">닫기</button>
+    </div>
 
-  let map;
-  let lightLayer, darkLayer;
-  let isDark = false;
+    <div id="loading-indicator">
+      <div class="loading-spinner"></div>
+      <p>지도 데이터를 로딩 중입니다...</p>
+    </div>
+  </main>
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initMap();
-    themeToggle.addEventListener('click', toggleTheme);
-  });
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    const scheduleDisplay = document.getElementById('schedule-display');
+    const scheduleTitle   = document.getElementById('schedule-title');
+    const scheduleContent = document.getElementById('schedule-content');
+    const closeScheduleBtn= document.getElementById('close-schedule');
+    const loadingIndicator= document.getElementById('loading-indicator');
+    const themeToggle     = document.getElementById('theme-toggle');
 
-  function initMap() {
-    loadingIndicator.style.display = 'flex';
+    // 버스 정류장 (예시)
+    const busStops = [
+      { name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
+        routes: { "Blue Route": ["08:00 AM","09:00 AM","10:00 AM","11:00 AM","12:00 PM"] },
+        description: "메인 보행자 출입구 부근 정류장입니다."
+      },
+      { name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
+        routes: { "Blue Route": ["08:05 AM","09:05 AM","10:05 AM","11:05 AM","12:05 PM"] },
+        description: "미8군 사령부 건물 앞 정류장입니다."
+      },
+      { name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
+        routes: { "Blue Route": ["08:10 AM","09:10 AM","10:10 AM","11:10 AM","12:10 PM"] },
+        description: "메인 PX 쇼핑몰 앞 정류장입니다."
+      },
+      { name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
+        routes: { "Purple Route": ["07:30 AM","08:30 AM","09:30 AM","10:30 AM","11:30 AM"] },
+        description: "병원 입구에 위치한 정류장입니다."
+      },
+      { name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
+        routes: { "All Routes": ["07:00 AM","07:15 AM","07:30 AM"] },
+        description: "기지 내 주요 버스 터미널입니다."
+      }
+    ];
 
-    const humphreysCenter = [36.9535, 127.0381];
-    map = L.map('map', { zoomControl: false }).setView(humphreysCenter, 14);
+    // 건물 번호 라벨 (예시 좌표)
+    const buildings = [
+      { number: 6006, lat: 36.9521, lon: 127.0378 },
+      { number: 2150, lat: 36.9565, lon: 127.0412 }
+      // 여기에 계속 추가하세요: { number: 1234, lat: .., lon: .. },
+    ];
 
-    lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
-    }).addTo(map);
+    let map, lightLayer, darkLayer, isDark = false;
 
-    darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
-      subdomains: 'abcd',
-      maxZoom: 20
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      themeToggle.addEventListener('click', toggleTheme);
     });
 
-    busStops.forEach(stop => {
-      const marker = L.marker([stop.lat, stop.lon]).addTo(map);
-      marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
-      marker.on('click', () => {
-        displaySchedule(stop);
+    function initMap() {
+      loadingIndicator.style.display = 'flex';
+
+      const humphreysCenter = [36.9535, 127.0381];
+      map = L.map('map', { zoomControl: false }).setView(humphreysCenter, 14);
+
+      // Carto Light/Dark
+      lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
+        subdomains: 'abcd', maxZoom: 20
+      }).addTo(map);
+
+      darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
+        subdomains: 'abcd', maxZoom: 20
       });
-    });
 
-    setTimeout(() => {
-      loadingIndicator.style.display = 'none';
-    }, 1500);
-  }
+      // 정류장 마커
+      busStops.forEach(stop => {
+        const marker = L.marker([stop.lat, stop.lon]).addTo(map);
+        marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
+        marker.on('click', () => displaySchedule(stop));
+      });
 
-  function toggleTheme() {
-    if (isDark) {
-      map.removeLayer(darkLayer);
-      lightLayer.addTo(map);
-      themeToggle.textContent = 'Dark';
-      isDark = false;
-    } else {
-      map.removeLayer(lightLayer);
-      darkLayer.addTo(map);
-      themeToggle.textContent = 'Light';
-      isDark = true;
+      // 건물번호 라벨 (항상 보이는 텍스트)
+      buildings.forEach(b => {
+        const labelIcon = L.divIcon({
+          className: 'building-label',
+          html: `<span>${b.number}</span>`,
+          iconSize: [0, 0],  // 실제 박스는 CSS로, 포인터 영향 없게
+          iconAnchor: [0, 0]
+        });
+        L.marker([b.lat, b.lon], { icon: labelIcon, interactive: false }).addTo(map);
+      });
+
+      // 로딩 종료
+      setTimeout(() => { loadingIndicator.style.display = 'none'; }, 800);
     }
-  }
 
-  function displaySchedule(stop) {
-    scheduleTitle.textContent = `${stop.name} 시간표`;
-    let html = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
-    for (const route in stop.routes) {
-      html += `<li><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
+    function toggleTheme() {
+      if (isDark) {
+        map.removeLayer(darkLayer);
+        lightLayer.addTo(map);
+        document.body.classList.remove('dark');
+        themeToggle.textContent = 'Dark';
+        isDark = false;
+      } else {
+        map.removeLayer(lightLayer);
+        darkLayer.addTo(map);
+        document.body.classList.add('dark');
+        themeToggle.textContent = 'Light';
+        isDark = true;
+      }
     }
-    html += `</ul><p class="mt-4 text-sm text-gray-500">참고: 위 시간표는 예시 데이터입니다.</p>`;
-    scheduleContent.innerHTML = html;
-    scheduleDisplay.classList.add('active');
-  }
 
-  closeScheduleBtn.addEventListener('click', () => {
-    scheduleDisplay.classList.remove('active');
-  });
-
-  window.addEventListener('resize', () => {
-    if (map) map.invalidateSize();
-  });
-</script>
-</body>
-</html>
+    function displaySchedule(stop) {
+      scheduleTitle.textContent = `${stop.name} 시간표`;
+      let html = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
+      for (const route in stop.routes) {
+        html += `<li><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
+      }
+      html += `</ul><p class="mt-4 text-sm text
