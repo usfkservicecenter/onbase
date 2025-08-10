@@ -48,6 +48,9 @@
       [maxLatRaw + padN, maxLonRaw + padE]
     );
 
+    // 경계 살짝 완화(사용자 위치가 살짝 벗어나도 보이도록)
+    const liveBounds = gateBounds.pad(0.15);
+
     // ===== 지도 (라이트 타일 + 부드러운 경계) =====
     const map = L.map('map', {
       zoomControl: true,
@@ -55,7 +58,7 @@
       touchZoom: true,
       dragging: true,
       doubleClickZoom: true,
-      maxBounds: gateBounds,
+      maxBounds: liveBounds,
       maxBoundsViscosity: 0.95
     });
 
@@ -101,34 +104,61 @@
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
-    // ===== 내 위치 (첫 화면 권한 요청 & 이동) =====
+    // ===== 내 위치: 첫 로딩에 즉시 요청 + 빠른 첫 고정(watch) =====
     const userLayer = L.layerGroup().addTo(map);
+    let located = false;
+    let fallbackTimer = null;
 
     function centerOn(latlng, accuracy) {
-      // 경계 밖이면 안으로 보정해서 이동
-      const inside = gateBounds.contains(latlng);
-      const target = inside ? latlng : gateBounds.getCenter();
-      map.setView(target, Math.max(map.getZoom(), 17), { animate: true });
+      // liveBounds 안으로 부드럽게 맞춰 이동
+      map.flyTo(latlng, 18, { duration: 1.0 });
       userLayer.clearLayers();
       L.circleMarker(latlng, { radius: 6 }).addTo(userLayer);
       if (accuracy) L.circle(latlng, { radius: accuracy }).addTo(userLayer);
     }
 
-    // 앱 시작 시 권한 요청 → 성공 시 현위치로 시작, 실패 시 전체 Bounds
-    let located = false;
-    map.whenReady(() => {
-      map.locate({ setView: false, maxZoom: 18, enableHighAccuracy: true, watch: false });
-      // 5초 내 응답 없으면 폴백
-      setTimeout(() => { if (!located) map.fitBounds(gateBounds); }, 5000);
-    });
+    function startLocate() {
+      // iOS Safari 일부 환경에서 prompt 지연 대비: watch 로 빠르게 첫 fix 받고 종료
+      map.locate({
+        setView: false,
+        maxZoom: 18,
+        enableHighAccuracy: true,
+        watch: true
+      });
+      // 8초 내 미수신 시 폴백
+      fallbackTimer = setTimeout(() => {
+        if (!located) {
+          map.fitBounds(gateBounds);
+          map.stopLocate();
+        }
+      }, 8000);
+    }
+
+    // 권한 프리체크(가능한 브라우저에 한해)
+    (async () => {
+      try {
+        if (navigator.permissions && navigator.permissions.query) {
+          const p = await navigator.permissions.query({ name: 'geolocation' });
+          // 상태와 무관하게 요청( 'granted'면 더 빨리 옴 )
+          startLocate();
+        } else {
+          startLocate();
+        }
+      } catch {
+        startLocate();
+      }
+    })();
 
     map.on('locationfound', (e) => {
       located = true;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+      map.stopLocate(); // 첫 위치 받으면 watch 중지
       centerOn(e.latlng, e.accuracy);
     });
 
     map.on('locationerror', () => {
       located = false;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       map.fitBounds(gateBounds);
     });
 
@@ -141,7 +171,9 @@
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(btn, 'click', (e) => {
           e.preventDefault();
-          map.locate({ setView: true, maxZoom: 18, enableHighAccuracy: true, watch: false });
+          located = false;
+          if (fallbackTimer) { clearTimeout(fallbackTimer); }
+          startLocate();
         });
         return container;
       }, onRemove: function () {}
