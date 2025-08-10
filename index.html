@@ -13,14 +13,8 @@
       color: #6b7280; font-size: 10px; font-weight: 700;
       text-shadow: 1px 1px 2px #fff; white-space: nowrap; pointer-events: none;
     }
-    /* locate 버튼 간단 스타일 */
-    .leaflet-control-locate {
-      background: #fff; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    }
-    .leaflet-control-locate button {
-      width: 34px; height: 34px; line-height: 34px; text-align: center;
-      border: none; background: transparent; cursor: pointer; font-size: 18px;
-    }
+    .leaflet-control-locate { background:#fff; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.2); }
+    .leaflet-control-locate button { width:34px; height:34px; line-height:34px; text-align:center; border:none; background:transparent; cursor:pointer; font-size:18px; }
     .leaflet-control-locate button:active { transform: scale(0.97); }
   </style>
 </head>
@@ -36,11 +30,11 @@
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
 
-    // ===== 서/북 끝단 확장 포인트 =====
+    // ===== 서/북 확장 포인트 =====
     const westMostLon  = 126.9846803;   // 5901 (Driving Range)
     const northMostLat = 36.9824546;    // 8710
 
-    // ===== bounds 계산 (남쪽 여유, 서/북 확장 반영) =====
+    // ===== bounds 계산 (남쪽 여유, 서/북 확장) =====
     const lats = gates.map(g => g.lat);
     const lons = gates.map(g => g.lon);
     const minLatRaw = Math.min(...lats);
@@ -48,11 +42,7 @@
     const minLonRaw = Math.min(westMostLon, ...lons);
     const maxLonRaw = Math.max(...lons);
 
-    const padN = 0.004;  // 북쪽 여유
-    const padS = 0.010;  // 남쪽 여유
-    const padW = 0.003;  // 서쪽 여유
-    const padE = 0.003;  // 동쪽 여유
-
+    const padN = 0.004, padS = 0.010, padW = 0.003, padE = 0.003;
     const gateBounds = L.latLngBounds(
       [minLatRaw - padS, minLonRaw - padW],
       [maxLatRaw + padN, maxLonRaw + padE]
@@ -75,48 +65,35 @@
       maxZoom: 19
     }).addTo(map);
 
-    map.fitBounds(gateBounds);
-
     // (옵션) 게이트 위치 표시
-    gates.forEach(g => {
-      L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name);
-    });
+    gates.forEach(g => L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name));
 
     // ===== 라벨 표시 제어 =====
     const buildingMarkers = [];
-    const LABEL_ZOOM = 15; // 15부터 표시
-
+    const LABEL_ZOOM = 15;
     function updateBuildingLabels() {
-      const zoom = map.getZoom();
+      const z = map.getZoom();
       buildingMarkers.forEach(m => {
-        const onMap = map.hasLayer(m);
-        if (zoom >= LABEL_ZOOM && !onMap) m.addTo(map);
-        if (zoom <  LABEL_ZOOM && onMap)  map.removeLayer(m);
+        const on = map.hasLayer(m);
+        if (z >= LABEL_ZOOM && !on) m.addTo(map);
+        if (z <  LABEL_ZOOM && on)  map.removeLayer(m);
       });
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ===== 좌표 로드: addr:housenumber 우선 표시 =====
+    // ===== 좌표 로드: addr:housenumber 우선 =====
     fetch('./buildings.json')
       .then(res => res.json())
       .then(buildings => {
         buildings.forEach(b => {
-          const lat = b.lat ?? b.y;
-          const lon = b.lon ?? b.x;
+          const lat = b.lat ?? b.y, lon = b.lon ?? b.x;
           if (lat == null || lon == null) return;
-
           const labelText =
             (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
             (b.name && String(b.name).trim()) || "";
           if (!labelText) return;
-
           const marker = L.marker([lat, lon], {
-            icon: L.divIcon({
-              className: 'building-label',
-              html: labelText,
-              iconSize: [26, 12],
-              iconAnchor: [13, 6]
-            })
+            icon: L.divIcon({ className: 'building-label', html: labelText, iconSize: [26,12], iconAnchor: [13,6] })
           });
           buildingMarkers.push(marker);
         });
@@ -124,45 +101,52 @@
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
-    // ===== 내 위치 찾기 버튼 (커스텀 컨트롤) =====
+    // ===== 내 위치 (첫 화면 권한 요청 & 이동) =====
     const userLayer = L.layerGroup().addTo(map);
-    let lastLocate = null;
 
+    function centerOn(latlng, accuracy) {
+      // 경계 밖이면 안으로 보정해서 이동
+      const inside = gateBounds.contains(latlng);
+      const target = inside ? latlng : gateBounds.getCenter();
+      map.setView(target, Math.max(map.getZoom(), 17), { animate: true });
+      userLayer.clearLayers();
+      L.circleMarker(latlng, { radius: 6 }).addTo(userLayer);
+      if (accuracy) L.circle(latlng, { radius: accuracy }).addTo(userLayer);
+    }
+
+    // 앱 시작 시 권한 요청 → 성공 시 현위치로 시작, 실패 시 전체 Bounds
+    let located = false;
+    map.whenReady(() => {
+      map.locate({ setView: false, maxZoom: 18, enableHighAccuracy: true, watch: false });
+      // 5초 내 응답 없으면 폴백
+      setTimeout(() => { if (!located) map.fitBounds(gateBounds); }, 5000);
+    });
+
+    map.on('locationfound', (e) => {
+      located = true;
+      centerOn(e.latlng, e.accuracy);
+    });
+
+    map.on('locationerror', () => {
+      located = false;
+      map.fitBounds(gateBounds);
+    });
+
+    // ===== 내 위치 찾기 버튼(수동 재탐색) =====
     const LocateControl = L.Control.extend({
       onAdd: function () {
         const container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
         const btn = L.DomUtil.create('button', '', container);
-        btn.title = '내 위치 찾기';
-        btn.innerHTML = '📍';
-        // 지도 제스처와 충돌 방지
+        btn.title = '내 위치 찾기'; btn.innerHTML = '📍';
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(btn, 'click', (e) => {
           e.preventDefault();
-          // 한 번 클릭 시 현재 위치로 이동
-          map.locate({
-            setView: true,
-            maxZoom: 18,
-            enableHighAccuracy: true,
-            watch: false
-          });
+          map.locate({ setView: true, maxZoom: 18, enableHighAccuracy: true, watch: false });
         });
         return container;
-      },
-      onRemove: function () {}
+      }, onRemove: function () {}
     });
     map.addControl(new LocateControl({ position: 'topleft' }));
-
-    map.on('locationfound', (e) => {
-      userLayer.clearLayers();
-      // 현재 위치 마커 + 정확도 원
-      L.circleMarker(e.latlng, { radius: 6 }).addTo(userLayer);
-      L.circle(e.latlng, { radius: e.accuracy }).addTo(userLayer);
-      lastLocate = e.latlng;
-    });
-
-    map.on('locationerror', (e) => {
-      alert('위치 접근 실패: ' + e.message + '\n(HTTPS 또는 localhost에서 테스트해 주세요)');
-    });
 
     // 사파리 등에서 자동 비활성화 대비
     map.whenReady(() => {
