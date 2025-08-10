@@ -10,10 +10,10 @@
     html, body { height: 100%; margin: 0; }
     #map { height: 100%; }
     .building-label {
-      color: #e5e7eb;           /* 밝은 회색: 다크맵에서 가독성 */
-      font-size: 12px;
+      color: #6b7280;       /* 라이트 맵에서 잘 보이는 회색 */
+      font-size: 10px;      /* 요청: 10px */
       font-weight: 700;
-      text-shadow: 1px 1px 2px #000;
+      text-shadow: 1px 1px 2px #fff;
       white-space: nowrap;
       pointer-events: none;
     }
@@ -24,31 +24,23 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
   <script>
-    // ====== 3개 게이트 좌표 (이 사각형 밖은 못 나가게 maxBounds) ======
+    // ===== 게이트 좌표 (maxBounds 계산용) =====
     const gates = [
       { name: "Millet Gate (도두리)",  lat: 36.95819961, lon: 127.04428911 },
       { name: "Yoon Gate (윤)",       lat: 36.96894099, lon: 127.03556648 },
-      // Charlton Gate 좌표는 Waze venue에서 추출한 값. 필요하면 알려줘, 바로 수정해줄게.
-      { name: "Charlton Gate (함정리)", lat: 36.96366000, lon: 127.05111000 }
+      { name: "Charlton Gate (함정리)", lat: 36.96366,    lon: 127.05111 }
     ];
 
-    // bounds 계산 + 약간의 여유(padDeg)
+    // bounds 계산 (+ 여유)
     const padDeg = 0.002;
-    const lats = gates.map(g => g.lat);
-    const lons = gates.map(g => g.lon);
-    const minLat = Math.min(...lats) - padDeg;
-    const maxLat = Math.max(...lats) + padDeg;
-    const minLon = Math.min(...lons) - padDeg;
-    const maxLon = Math.max(...lons) + padDeg;
-    const gateBounds = L.latLngBounds([ [minLat, minLon], [maxLat, maxLon] ]);
+    const lats = gates.map(g => g.lat), lons = gates.map(g => g.lon);
+    const minLat = Math.min(...lats) - padDeg, maxLat = Math.max(...lats) + padDeg;
+    const minLon = Math.min(...lons) - padDeg, maxLon = Math.max(...lons) + padDeg;
+    const gateBounds = L.latLngBounds([[minLat, minLon],[maxLat, maxLon]]);
 
-    // ====== 지도 생성 (다크 타일 유지) ======
-    const map = L.map('map', {
-      worldCopyJump: false,
-      zoomControl: true
-    });
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // ===== 지도 (라이트 타일) =====
+    const map = L.map('map', { zoomControl: true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap & CARTO',
       subdomains: 'abcd',
       maxZoom: 19
@@ -58,9 +50,14 @@
     map.fitBounds(gateBounds);
     map.on('drag', () => map.panInsideBounds(gateBounds, { animate: true }));
 
-    // ====== 건물 라벨 마커 컨트롤 ======
+    // (옵션) 게이트 점표시
+    gates.forEach(g => {
+      L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name);
+    });
+
+    // ===== 라벨 표시 제어 =====
     const buildingMarkers = [];
-    const LABEL_ZOOM = 17;
+    const LABEL_ZOOM = 15; // 요청: 15부터 보이기
 
     function updateBuildingLabels() {
       const zoom = map.getZoom();
@@ -72,31 +69,36 @@
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ====== 외부 JSON에서 좌표 불러오기 ======
+    // ===== 좌표 로드 (건물번호 우선 표시) =====
     fetch('./buildings.json')
       .then(res => res.json())
       .then(buildings => {
         buildings.forEach(b => {
-          const marker = L.marker([b.lat, b.lon], {
+          // 표기 텍스트: number → addr:housenumber → name 순 폴백
+          const labelText =
+            (b.number && String(b.number).trim()) ||
+            (b['addr:housenumber'] && String(b['addr:housenumber']).trim()) ||
+            (b.name && String(b.name).trim()) ||
+            '';
+
+          // 좌표 키: lat/lon 또는 y/x 폴백 허용
+          const lat = (b.lat ?? b.y);
+          const lon = (b.lon ?? b.x);
+          if (lat == null || lon == null || !labelText) return;
+
+          const marker = L.marker([lat, lon], {
             icon: L.divIcon({
               className: 'building-label',
-              html: b.number,
-              iconSize: [30, 12],
-              iconAnchor: [15, 6]
+              html: labelText,
+              iconSize: [26, 12],  // 10px 글씨에 맞춰 살짝 축소
+              iconAnchor: [13, 6]
             })
           });
           buildingMarkers.push(marker);
         });
-        updateBuildingLabels();   // 초기 줌 상태 반영
+        updateBuildingLabels(); // 초기 적용
       })
-      .catch(err => {
-        console.error('건물 좌표 로드 실패:', err);
-      });
-
-    // (선택) 게이트 위치 점표시
-    gates.forEach(g => {
-      L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name, {permanent:false});
-    });
+      .catch(err => console.error('건물 좌표 로드 실패:', err));
   </script>
 </body>
 </html>
