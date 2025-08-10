@@ -13,9 +13,15 @@
       color: #6b7280; font-size: 10px; font-weight: 700;
       text-shadow: 1px 1px 2px #fff; white-space: nowrap; pointer-events: none;
     }
-    .leaflet-control-locate { background:#fff; border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.2); }
-    .leaflet-control-locate button { width:34px; height:34px; line-height:34px; text-align:center; border:none; background:transparent; cursor:pointer; font-size:18px; }
-    .leaflet-control-locate button:active { transform: scale(0.97); }
+    /* locate 버튼 */
+    .leaflet-control-locate { background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+    .leaflet-control-locate button{
+      width:36px; height:36px; display:grid; place-items:center;
+      border:none; background:transparent; cursor:pointer; color:#111827; /* text-gray-900 */
+    }
+    .leaflet-control-locate button:hover{ background:#f3f4f6; } /* gray-100 */
+    .leaflet-control-locate svg{ width:18px; height:18px; stroke:currentColor; fill:none; }
+    .locating .leaflet-control-locate button{ color:#2563eb; } /* locating 중 파랑 (blue-600) */
   </style>
 </head>
 <body>
@@ -34,7 +40,7 @@
     const westMostLon  = 126.9846803;   // 5901 (Driving Range)
     const northMostLat = 36.9824546;    // 8710
 
-    // ===== bounds 계산 (남쪽 여유, 서/북 확장) =====
+    // ===== bounds 계산 =====
     const lats = gates.map(g => g.lat);
     const lons = gates.map(g => g.lon);
     const minLatRaw = Math.min(...lats);
@@ -47,11 +53,9 @@
       [minLatRaw - padS, minLonRaw - padW],
       [maxLatRaw + padN, maxLonRaw + padE]
     );
+    const liveBounds = gateBounds.pad(0.15); // 살짝 여유
 
-    // liveBounds: 약간 여유 (경계 밖 살짝 벗어난 위치도 표시 가능)
-    const liveBounds = gateBounds.pad(0.15);
-
-    // ===== 지도 (라이트 타일 + 부드러운 경계) =====
+    // ===== 지도 =====
     const map = L.map('map', {
       zoomControl: true,
       scrollWheelZoom: true,
@@ -68,7 +72,7 @@
       maxZoom: 19
     }).addTo(map);
 
-    // (옵션) 게이트 위치 표시
+    // (옵션) 게이트 표시
     gates.forEach(g => L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name));
 
     // ===== 라벨 표시 제어 =====
@@ -113,48 +117,40 @@
       return L.latLng(clampedLat, clampedLng);
     }
 
-    // ===== 내 위치: 첫 로딩에 즉시 요청 =====
+    // ===== 내 위치: 첫 로딩 요청 =====
     const userLayer = L.layerGroup().addTo(map);
-    let located = false;
-    let fallbackTimer = null;
+    let located = false, fallbackTimer = null;
 
     function centerOn(latlng, accuracy) {
-      // 경계 밖이면 경계 안 가장 가까운 점으로 끌어당김
       const target = clampToBounds(latlng, liveBounds);
-      map.setView(target, 17, { animate: true });   // 17로 안정적으로 확대
-      // 크기 재계산(사파리 회색화 방지)
+      map.setView(target, 17, { animate: true });
       setTimeout(() => map.invalidateSize(), 50);
-
       userLayer.clearLayers();
       L.circleMarker(latlng, { radius: 6 }).addTo(userLayer);
       if (accuracy) L.circle(latlng, { radius: accuracy }).addTo(userLayer);
     }
 
     function startLocate() {
-      map.locate({
-        setView: false,
-        maxZoom: 18,
-        enableHighAccuracy: true,
-        watch: true    // 첫 fix를 더 빨리 받기 위해 watch
-      });
-      // 8초 내 미수신 시 폴백(전체 경계 표시)
+      document.body.classList.add('locating');
+      map.locate({ setView: false, maxZoom: 18, enableHighAccuracy: true, watch: true });
+      // 8초 폴백
       fallbackTimer = setTimeout(() => {
         if (!located) {
           map.fitBounds(gateBounds);
           map.stopLocate();
+          document.body.classList.remove('locating');
           setTimeout(() => map.invalidateSize(), 50);
         }
       }, 8000);
     }
 
-    map.whenReady(() => {
-      startLocate();
-    });
+    map.whenReady(() => { startLocate(); });
 
     map.on('locationfound', (e) => {
       located = true;
       if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
-      map.stopLocate(); // 첫 위치 받으면 watch 중지
+      map.stopLocate();
+      document.body.classList.remove('locating');
       centerOn(e.latlng, e.accuracy);
     });
 
@@ -162,15 +158,24 @@
       located = false;
       if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       map.fitBounds(gateBounds);
+      document.body.classList.remove('locating');
       setTimeout(() => map.invalidateSize(), 50);
     });
 
-    // ===== 내 위치 찾기 버튼(수동 재탐색) =====
+    // ===== 내 위치 버튼 (네비게이션 삼각형 아이콘) =====
     const LocateControl = L.Control.extend({
       onAdd: function () {
         const container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
         const btn = L.DomUtil.create('button', '', container);
-        btn.title = '내 위치 찾기'; btn.innerHTML = '📍';
+        btn.title = '내 위치 찾기';
+        btn.setAttribute('aria-label', '내 위치 찾기');
+        btn.innerHTML = `
+          <!-- Navigation (paper-plane) icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21.5 3.5L10 14l-1 6 4-3 8.5-13.5z" stroke-width="2" stroke-linejoin="round"></path>
+            <path d="M21.5 3.5L3 11l7 3 11.5-10.5z" stroke-width="2" stroke-linejoin="round"></path>
+          </svg>
+        `;
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(btn, 'click', (e) => {
           e.preventDefault();
@@ -179,11 +184,12 @@
           startLocate();
         });
         return container;
-      }, onRemove: function () {}
+      },
+      onRemove: function () {}
     });
     map.addControl(new LocateControl({ position: 'topleft' }));
 
-    // 사파리에서 제스처가 비활성화될 때 대비
+    // 제스처 비활성화 대비
     map.whenReady(() => {
       if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
       if (!map.options.touchZoom) map.touchZoom.enable();
