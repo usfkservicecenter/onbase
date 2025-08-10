@@ -24,26 +24,37 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
   <script>
-    // ===== 게이트 좌표 (maxBounds 계산용) =====
+    // ===== 게이트 좌표 =====
     const gates = [
       { name: "Millet Gate (도두리)",  lat: 36.95819961, lon: 127.04428911 },
-      { name: "Yoon Gate (윤)",       lat: 36.96894099, lon: 127.03556648 },
-      { name: "Charlton Gate (함정리)", lat: 36.96366,    lon: 127.05111 }
+      { name: "Yoon Gate (윤)",        lat: 36.96894099, lon: 127.03556648 },
+      // 남쪽 범위 확보 위해 Charlton Gate 좌표 적용
+      { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
 
-    // bounds 계산 (+ 여유)
-    const padDeg = 0.002;
+    // ===== bounds 계산 (남쪽만 여유를 더 줌) =====
+    const padN = 0.003;   // 북
+    const padS = 0.010;   // 남 (Charlton까지 충분히 내려가게)
+    const padW = 0.003;   // 서
+    const padE = 0.003;   // 동
+
     const lats = gates.map(g => g.lat), lons = gates.map(g => g.lon);
-    const minLat = Math.min(...lats) - padDeg, maxLat = Math.max(...lats) + padDeg;
-    const minLon = Math.min(...lons) - padDeg, maxLon = Math.max(...lons) + padDeg;
-    const gateBounds = L.latLngBounds([[minLat, minLon],[maxLat, maxLon]]);
+    const minLatRaw = Math.min(...lats);
+    const maxLatRaw = Math.max(...lats);
+    const minLonRaw = Math.min(...lons);
+    const maxLonRaw = Math.max(...lons);
+
+    const gateBounds = L.latLngBounds(
+      [minLatRaw - padS, minLonRaw - padW],
+      [maxLatRaw + padN, maxLonRaw + padE]
+    );
 
     // ===== 지도 (라이트 타일) =====
     const map = L.map('map', {
       zoomControl: true,
-      scrollWheelZoom: true,   // 휠/트랙패드 줌 허용
-      touchZoom: true,         // 터치 핀치줌 허용
-      dragging: true,          // 드래그 허용
+      scrollWheelZoom: true,
+      touchZoom: true,
+      dragging: true,
       doubleClickZoom: true
     });
 
@@ -55,16 +66,15 @@
 
     map.setMaxBounds(gateBounds);
     map.fitBounds(gateBounds);
-    // ★ panInsideBounds 강제 호출 제거 (스크롤 문제 원인 가능성)
 
-    // (옵션) 게이트 점표시
+    // (옵션) 게이트 위치 표시
     gates.forEach(g => {
       L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name);
     });
 
     // ===== 라벨 표시 제어 =====
     const buildingMarkers = [];
-    const LABEL_ZOOM = 15; // 요청: 15부터 보이기
+    const LABEL_ZOOM = 15; // 요청: 15부터 표시
 
     function updateBuildingLabels() {
       const zoom = map.getZoom();
@@ -85,7 +95,6 @@
           const lon = b.lon ?? b.x;
           if (lat == null || lon == null) return;
 
-          // 라벨 텍스트: addr:housenumber 우선, 없으면 name
           const labelText =
             (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
             (b.name && String(b.name).trim()) ||
@@ -107,7 +116,7 @@
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
-    // 보조: 모바일 환경에서 브라우저가 자동 비활성화했을 경우 강제 enable
+    // 사파리 등에서 자동 비활성화됐을 경우 대비
     map.whenReady(() => {
       if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
       if (!map.options.touchZoom) map.touchZoom.enable();
