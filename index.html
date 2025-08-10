@@ -31,20 +31,23 @@
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
 
-    // ===== 서쪽 확장: 5901번 건물까지 포함 =====
-    const westMostLon = 126.9846803; // Driving Range
+    // ===== 서/북 끝단 확장 지점 =====
+    const westMostLon  = 126.9846803;           // 5901 (Driving Range)
+    const northMostLat = 36.9824546;            // 8710
+
+    // ===== bounds 계산 (남쪽 여유 ↑, 서쪽/북쪽 확장 반영) =====
     const lats = gates.map(g => g.lat);
     const lons = gates.map(g => g.lon);
 
     const minLatRaw = Math.min(...lats);
-    const maxLatRaw = Math.max(...lats);
-    const minLonRaw = Math.min(westMostLon, ...lons); // 서쪽 범위에 포함
+    const maxLatRaw = Math.max(northMostLat, ...lats); // 북쪽은 8710까지
+    const minLonRaw = Math.min(westMostLon, ...lons);  // 서쪽은 5901까지
     const maxLonRaw = Math.max(...lons);
 
-    const padN = 0.003;   // 북쪽
-    const padS = 0.010;   // 남쪽 (Charlton까지)
-    const padW = 0.003;   // 서쪽 패딩
-    const padE = 0.003;   // 동쪽
+    const padN = 0.004;   // 북쪽 여유(약 440m)
+    const padS = 0.010;   // 남쪽 여유(Charlton 아래까지)
+    const padW = 0.003;   // 서쪽 여유
+    const padE = 0.003;   // 동쪽 여유
 
     const gateBounds = L.latLngBounds(
       [minLatRaw - padS, minLonRaw - padW],
@@ -57,7 +60,9 @@
       scrollWheelZoom: true,
       touchZoom: true,
       dragging: true,
-      doubleClickZoom: true
+      doubleClickZoom: true,
+      maxBounds: gateBounds,
+      maxBoundsViscosity: 0.95   // 경계에서 부드럽게 멈춤(튕김 완화)
     });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -66,9 +71,9 @@
       maxZoom: 19
     }).addTo(map);
 
-    map.setMaxBounds(gateBounds);
     map.fitBounds(gateBounds);
 
+    // (옵션) 게이트 위치 표시
     gates.forEach(g => {
       L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name);
     });
@@ -87,7 +92,7 @@
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ===== addr:housenumber 우선 표시 =====
+    // ===== 좌표 로드: addr:housenumber 우선 표시 =====
     fetch('./buildings.json')
       .then(res => res.json())
       .then(buildings => {
@@ -98,8 +103,7 @@
 
           const labelText =
             (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
-            (b.name && String(b.name).trim()) ||
-            "";
+            (b.name && String(b.name).trim()) || "";
 
           if (!labelText) return;
 
@@ -117,6 +121,7 @@
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
+    // 사파리 등에서 자동 비활성화됐을 경우 대비
     map.whenReady(() => {
       if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
       if (!map.options.touchZoom) map.touchZoom.enable();
