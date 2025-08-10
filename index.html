@@ -1,222 +1,447 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>OnBase USAG Humphreys 셔틀 버스</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <style>
-    html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f3f4f6; /* gray-100 */
-      color: #374151;      /* gray-800 */
-      display: flex; flex-direction: column; min-height: 100vh;
-    }
-    header {
-      background: white; box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-      height: 80px; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; padding: 0 1rem;
-      z-index: 10; position: relative;
-    }
-    main { flex-grow: 1; height: calc(100vh - 80px); }
-    #map {
-      height: 100%; width: 100%; border: none; border-radius: 0.5rem;
-      box-shadow: 0 10px 15px rgba(0,0,0,0.1); z-index: 1;
-    }
-    /* 다크/라이트 전환 버튼 */
-    #theme-toggle {
-      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-      background: #3b82f6; color: white; padding: 0.35rem 0.7rem;
-      border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; font-weight: 500;
-    }
-    #theme-toggle:hover { background: #2563eb; }
-
-    /* 슬라이드 업 시간표 */
-    #schedule-display {
-      position: fixed; bottom: 0; left: 0; right: 0; max-height: 50%;
-      background: white; box-shadow: 0 -4px 20px rgb(0 0 0 / 0.15);
-      border-top-left-radius: 1rem; border-top-right-radius: 1rem;
-      padding: 1.5rem; overflow-y: auto; transform: translateY(100%);
-      transition: transform 0.3s ease-in-out; z-index: 20;
-    }
-    #schedule-display.active { transform: translateY(0); }
-    #close-schedule {
-      margin-top: 1rem; width: 100%; background-color: #3b82f6; color: white;
-      padding: 0.5rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;
-    }
-    #close-schedule:hover { background-color: #2563eb; }
-    .leaflet-popup-content-wrapper {
-      border-radius: 0.5rem !important;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
-      padding: 1rem !important;
-    }
-    /* 로딩 인디케이터 */
-    .loading-spinner {
-      border: 4px solid rgba(0,0,0,0.1); border-left-color: #3B82F6;
-      border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
-    #loading-indicator {
-      position: fixed; inset: 0; background: rgba(243,244,246,0.75);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 50; border-radius: 0.5rem; color: #3b82f6; font-weight: 600; font-size: 1.125rem;
-    }
-
-    /* 건물번호 라벨 스타일 (항상 보임) */
-    .building-label {
-      pointer-events: none; /* 라벨 클릭으로 지도 인터랙션 막지 않음 */
-    }
-    .building-label span {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-size: 12px; font-weight: 700; line-height: 1;
-      background: rgba(255,255,255,0.85);
-      color: #111827; /* gray-900 */
-      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-      /* 라벨이 타일 위에서 잘 보이도록 약간의 대비 */
-    }
-    /* 다크 테마일 때 라벨 대비 조정 */
-    body.dark .building-label span {
-      background: rgba(17,24,39,0.85); /* gray-900 */
-      color: #f9fafb; /* gray-50 */
-      box-shadow: 0 1px 2px rgba(0,0,0,0.4);
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>OnBase USAG Humphreys 건물 지도</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <style>
+        html, body { height: 100%; margin: 0; }
+        #map { height: 100%; }
+        .building-label {
+            color: #6b7280; /* Tailwind gray-500 */
+            font-size: 12px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px white;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1 class="text-2xl font-bold text-blue-700">OnBase</h1>
-    <p class="text-gray-600 text-sm mt-1">USAG Humphreys 셔틀 버스 정보를 지도에서 확인하세요.</p>
-    <button id="theme-toggle" type="button" aria-label="테마 전환">Dark</button>
-  </header>
-
-  <main>
     <div id="map"></div>
 
-    <div id="schedule-display">
-      <h2 id="schedule-title" class="text-xl font-semibold text-blue-600 mb-2"></h2>
-      <div id="schedule-content" class="text-gray-700 text-sm"></div>
-      <button id="close-schedule">닫기</button>
-    </div>
-
-    <div id="loading-indicator">
-      <div class="loading-spinner"></div>
-      <p>지도 데이터를 로딩 중입니다...</p>
-    </div>
-  </main>
-
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script>
-    const scheduleDisplay = document.getElementById('schedule-display');
-    const scheduleTitle   = document.getElementById('schedule-title');
-    const scheduleContent = document.getElementById('schedule-content');
-    const closeScheduleBtn= document.getElementById('close-schedule');
-    const loadingIndicator= document.getElementById('loading-indicator');
-    const themeToggle     = document.getElementById('theme-toggle');
-
-    // 버스 정류장 (예시)
-    const busStops = [
-      { name: "Pedestrian Gate (보행자 출입구)", lat: 36.9550, lon: 127.0350,
-        routes: { "Blue Route": ["08:00 AM","09:00 AM","10:00 AM","11:00 AM","12:00 PM"] },
-        description: "메인 보행자 출입구 부근 정류장입니다."
-      },
-      { name: "Eighth Army HQ (미8군 사령부)", lat: 36.9500, lon: 127.0400,
-        routes: { "Blue Route": ["08:05 AM","09:05 AM","10:05 AM","11:05 AM","12:05 PM"] },
-        description: "미8군 사령부 건물 앞 정류장입니다."
-      },
-      { name: "Main Exchange (PX)", lat: 36.9580, lon: 127.0420,
-        routes: { "Blue Route": ["08:10 AM","09:10 AM","10:10 AM","11:10 AM","12:10 PM"] },
-        description: "메인 PX 쇼핑몰 앞 정류장입니다."
-      },
-      { name: "Brian D. Allgood Army Community Hospital", lat: 36.9450, lon: 127.0300,
-        routes: { "Purple Route": ["07:30 AM","08:30 AM","09:30 AM","10:30 AM","11:30 AM"] },
-        description: "병원 입구에 위치한 정류장입니다."
-      },
-      { name: "Bus Terminal (버스 터미널)", lat: 36.9480, lon: 127.0385,
-        routes: { "All Routes": ["07:00 AM","07:15 AM","07:30 AM"] },
-        description: "기지 내 주요 버스 터미널입니다."
-      }
-    ];
-
-    // 건물 번호 라벨 (예시 좌표)
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
     const buildings = [
-      { number: 6006, lat: 36.9521, lon: 127.0378 },
-      { number: 2150, lat: 36.9565, lon: 127.0412 }
-      // 여기에 계속 추가하세요: { number: 1234, lat: .., lon: .. },
-    ];
+    {number: "1603", lat: 36.9511576, lon: 127.0277084},
+    {number: "121;122", lat: 36.9485075, lon: 127.0277354},
+    {number: "7410", lat: 36.977423, lon: 126.9936946},
+    {number: "7413", lat: 36.976526, lon: 126.9928995},
+    {number: "7411", lat: 36.976078, lon: 126.9929788},
+    {number: "7434", lat: 36.9755718, lon: 126.9945497},
+    {number: "7435", lat: 36.9760013, lon: 126.994457},
+    {number: "7430", lat: 36.9768916, lon: 126.9952253},
+    {number: "7437", lat: 36.9750489, lon: 126.9960775},
+    {number: "7436", lat: 36.9753089, lon: 126.9965365},
+    {number: "7440", lat: 36.976383, lon: 126.9967617},
+    {number: "7321", lat: 36.9744279, lon: 126.997965},
+    {number: "7320", lat: 36.9748694, lon: 126.997872},
+    {number: "7325", lat: 36.9757692, lon: 126.9986104},
+    {number: "8310", lat: 36.9749607, lon: 127.0000083},
+    {number: "7316", lat: 36.9735769, lon: 126.9994831},
+    {number: "7315", lat: 36.9738535, lon: 126.999926},
+    {number: "7309", lat: 36.9731675, lon: 127.0007125},
+    {number: "7310", lat: 36.9736066, lon: 127.0006303},
+    {number: "7314", lat: 36.9738633, lon: 127.0010818},
+    {number: "8300", lat: 36.9744607, lon: 127.0015026},
+    {number: "7240", lat: 36.9741664, lon: 127.0036049},
+    {number: "7241", lat: 36.9735504, lon: 127.0033212},
+    {number: "7242", lat: 36.9732796, lon: 127.0028693},
+    {number: "7243", lat: 36.9728488, lon: 127.002973},
+    {number: "7319", lat: 36.9742972, lon: 126.9998455},
+    {number: "7324", lat: 36.9751164, lon: 126.9983175},
+    {number: "7441", lat: 36.9757366, lon: 126.9964513},
+    {number: "7431", lat: 36.976251, lon: 126.9948988},
+    {number: "7412", lat: 36.976777, lon: 126.9933474},
+    {number: "7500", lat: 36.9767439, lon: 126.9909074},
+    {number: "7505", lat: 36.9774541, lon: 126.9912807},
+    {number: "7514", lat: 36.9773783, lon: 126.9889933},
+    {number: "7519", lat: 36.9780811, lon: 126.989373},
+    {number: "7515", lat: 36.9778776, lon: 126.9887567},
+    {number: "7520", lat: 36.9789917, lon: 126.9898307},
+    {number: "7506", lat: 36.97834, lon: 126.9917248},
+    {number: "7503", lat: 36.9769545, lon: 126.991528},
+    {number: "7550", lat: 36.9783345, lon: 126.9861255},
+    {number: "7553", lat: 36.9785986, lon: 126.9865793},
+    {number: "7555", lat: 36.9790446, lon: 126.9864953},
+    {number: "7556", lat: 36.9796778, lon: 126.9868022},
+    {number: "7621", lat: 36.9794444, lon: 126.9848588},
+    {number: "7626", lat: 36.9799546, lon: 126.9850289},
+    {number: "7628", lat: 36.9807938, lon: 126.9854677},
+    {number: "7233", lat: 36.9723569, lon: 127.0045031},
+    {number: "7232", lat: 36.972591, lon: 127.0049388},
+    {number: "7231", lat: 36.9730181, lon: 127.0048415},
+    {number: "7230", lat: 36.9736482, lon: 127.0051794},
+    {number: "7213", lat: 36.9718295, lon: 127.0060101},
+    {number: "7212", lat: 36.9720807, lon: 127.0064523},
+    {number: "7211", lat: 36.9725074, lon: 127.0063537},
+    {number: "7210", lat: 36.9731388, lon: 127.006686},
+    {number: "7131", lat: 36.9718649, lon: 127.0082641},
+    {number: "7121", lat: 36.9713675, lon: 127.0097887},
+    {number: "7111", lat: 36.9708557, lon: 127.0113182},
+    {number: "7132", lat: 36.9716308, lon: 127.00782},
+    {number: "7122", lat: 36.9709466, lon: 127.0098971},
+    {number: "7112", lat: 36.9704368, lon: 127.0114216},
+    {number: "7133", lat: 36.9711998, lon: 127.0079159},
+    {number: "7123", lat: 36.9706988, lon: 127.0094661},
+    {number: "7113", lat: 36.970183, lon: 127.0109906},
+    {number: "7130", lat: 36.9725136, lon: 127.0086127},
+    {number: "7120", lat: 36.9720141, lon: 127.0101382},
+    {number: "7110", lat: 36.9715001, lon: 127.0116682},
+    {number: "7030", lat: 36.9697495, lon: 127.0125043},
+    {number: "7031", lat: 36.9695972, lon: 127.0130079},
+    {number: "7032", lat: 36.9702643, lon: 127.0131427},
+    {number: "7040", lat: 36.9719859, lon: 127.0139631},
+    {number: "7020", lat: 36.9693604, lon: 127.0143229},
+    {number: "7010", lat: 36.9691642, lon: 127.0158722},
+    {number: "7000", lat: 36.9687299, lon: 127.0171821},
+    {number: "8110", lat: 36.9764903, lon: 127.0148163},
+    {number: "6705", lat: 36.9715186, lon: 127.0005687},
+    {number: "6702", lat: 36.9725264, lon: 126.9991164},
+    {number: "6706", lat: 36.971013, lon: 126.999863},
+    {number: "6707", lat: 36.9713286, lon: 126.9987391},
+    {number: "6708", lat: 36.9717528, lon: 126.997674},
+    {number: "6704", lat: 36.972481, lon: 126.9976271},
+    {number: "7300", lat: 36.9731908, lon: 126.9970464},
+    {number: "6800", lat: 36.9739176, lon: 126.9958771},
+    {number: "6803", lat: 36.9729173, lon: 126.9953156},
+    {number: "6806", lat: 36.9729548, lon: 126.9945979},
+    {number: "6807", lat: 36.9730799, lon: 126.9937937},
+    {number: "6815", lat: 36.9741728, lon: 126.9947872},
+    {number: "6809", lat: 36.9736582, lon: 126.9937337},
+    {number: "6821", lat: 36.9740133, lon: 126.9915754},
+    {number: "6820", lat: 36.975073, lon: 126.9927078},
+    {number: "6957", lat: 36.976479, lon: 126.986907},
+    {number: "6953", lat: 36.9755373, lon: 126.9877635},
+    {number: "6950", lat: 36.9736032, lon: 126.9867818},
+    {number: "6961", lat: 36.9755716, lon: 126.9866092},
+    {number: "6963", lat: 36.9744636, lon: 126.9859774},
+    {number: "6420", lat: 36.9682441, lon: 127.0025287},
+    {number: "6430", lat: 36.9676376, lon: 127.0020857},
+    {number: "6400", lat: 36.967669, lon: 127.0031189},
+    {number: "6410", lat: 36.9688303, lon: 127.0026927},
+    {number: "6500", lat: 36.9709927, lon: 127.0044031},
+    {number: "5824", lat: 36.9654689, lon: 126.996965},
+    {number: "5826", lat: 36.9652829, lon: 126.9973271},
+    {number: "5822", lat: 36.9656471, lon: 126.9966311},
+    {number: "5820", lat: 36.9658158, lon: 126.9962938},
+    {number: "5818", lat: 36.9659904, lon: 126.995945},
+    {number: "5816", lat: 36.9661153, lon: 126.9955609},
+    {number: "5823", lat: 36.9657629, lon: 126.9974244},
+    {number: "5821", lat: 36.9659359, lon: 126.997096},
+    {number: "5819", lat: 36.966112, lon: 126.996758},
+    {number: "5817", lat: 36.9662925, lon: 126.9964024},
+    {number: "5809", lat: 36.9666016, lon: 126.995964},
+    {number: "5807", lat: 36.9666558, lon: 126.9963659},
+    {number: "5805", lat: 36.9665472, lon: 126.9969635},
+    {number: "5803", lat: 36.9663779, lon: 126.9973331},
+    {number: "5801", lat: 36.9661453, lon: 126.9976573},
+    {number: "5802", lat: 36.9664562, lon: 126.9980096},
+    {number: "5804", lat: 36.9666886, lon: 126.9977278},
+    {number: "5806", lat: 36.9668625, lon: 126.9973993},
+    {number: "5808", lat: 36.966985, lon: 126.9970323},
+    {number: "5810", lat: 36.9670433, lon: 126.9966241},
+    {number: "5813", lat: 36.9664, lon: 126.9950681},
+    {number: "5812", lat: 36.966912, lon: 126.9956626},
+    {number: "5811", lat: 36.9670555, lon: 126.9962019},
+    {number: "6701", lat: 36.9723605, lon: 127.0005202},
+    {number: "6703", lat: 36.9730764, lon: 126.9983361},
+    {number: "6322", lat: 36.9701397, lon: 127.0073093},
+    {number: "6320", lat: 36.9693962, lon: 127.009467},
+    {number: "6326", lat: 36.9680952, lon: 127.0088031},
+    {number: "6325", lat: 36.9683865, lon: 127.0076943},
+    {number: "6324", lat: 36.9688233, lon: 127.006647},
+    {number: "6323", lat: 36.9695628, lon: 127.0065528},
+    {number: "6321", lat: 36.9694806, lon: 127.0083973},
+    {number: "6317", lat: 36.9675357, lon: 127.0098709},
+    {number: "6315", lat: 36.9688337, lon: 127.0106669},
+    {number: "6380", lat: 36.9655861, lon: 127.0078752},
+    {number: "6365", lat: 36.9654541, lon: 127.0086671},
+    {number: "6360", lat: 36.9662522, lon: 127.0093661},
+    {number: "6370", lat: 36.966875, lon: 127.0095973},
+    {number: "6350", lat: 36.9672307, lon: 127.0085706},
+    {number: "6100", lat: 36.9677338, lon: 127.0126968},
+    {number: "6110", lat: 36.9677995, lon: 127.0116415},
+    {number: "6120", lat: 36.9666685, lon: 127.0138312},
+    {number: "6140", lat: 36.9670773, lon: 127.0165122},
+    {number: "6008", lat: 36.9636781, lon: 127.0164784},
+    {number: "5730", lat: 36.9636263, lon: 127.0000602},
+    {number: "5700", lat: 36.9658039, lon: 126.9996912},
+    {number: "5725", lat: 36.9646035, lon: 127.0022825},
+    {number: "2110", lat: 36.9587801, lon: 127.0233989},
+    {number: "12700", lat: 36.9750168, lon: 127.0219433},
+    {number: "12710", lat: 36.9741931, lon: 127.0212586},
+    {number: "13000", lat: 36.9718328, lon: 127.0248174},
+    {number: "13013", lat: 36.9702701, lon: 127.0252452},
+    {number: "13014", lat: 36.9706595, lon: 127.0256878},
+    {number: "13007", lat: 36.9709573, lon: 127.0243184},
+    {number: "13004", lat: 36.9713406, lon: 127.0238676},
+    {number: "13019", lat: 36.9696585, lon: 127.0261769},
+    {number: "5520", lat: 36.9618084, lon: 126.996033},
+    {number: "5103", lat: 36.957037, lon: 127.0144039},
+    {number: "5102", lat: 36.9577456, lon: 127.0141561},
+    {number: "5101", lat: 36.9575518, lon: 127.0133025},
+    {number: "5172", lat: 36.9586681, lon: 127.0122184},
+    {number: "5173", lat: 36.9579658, lon: 127.0124661},
+    {number: "5171", lat: 36.9584744, lon: 127.0113679},
+    {number: "2260", lat: 36.9627049, lon: 127.010128},
+    {number: "2250", lat: 36.962276, lon: 127.0111318},
+    {number: "2240", lat: 36.9617362, lon: 127.0127189},
+    {number: "2230", lat: 36.9607286, lon: 127.0150327},
+    {number: "2220", lat: 36.9603138, lon: 127.0160863},
+    {number: "2111", lat: 36.9587733, lon: 127.0250073},
+    {number: "12412", lat: 36.968161, lon: 127.0300019},
+    {number: "12410", lat: 36.9677829, lon: 127.0295915},
+    {number: "12401", lat: 36.9662579, lon: 127.0311552},
+    {number: "12400", lat: 36.9667976, lon: 127.0307143},
+    {number: "1294", lat: 36.9638477, lon: 127.0396633},
+    {number: "12001", lat: 36.9638239, lon: 127.0386022},
+    {number: "12002", lat: 36.9638364, lon: 127.0391838},
+    {number: "1296", lat: 36.962857, lon: 127.039586},
+    {number: "12302", lat: 36.9690473, lon: 127.0359462},
+    {number: "12203", lat: 36.9665175, lon: 127.038345},
+    {number: "12209", lat: 36.965849, lon: 127.0373943},
+    {number: "12200", lat: 36.9664736, lon: 127.0373866},
+    {number: "12206", lat: 36.9658601, lon: 127.0383704},
+    {number: "12106", lat: 36.965455, lon: 127.035307},
+    {number: "1219", lat: 36.9643054, lon: 127.0378045},
+    {number: "1240", lat: 36.9647572, lon: 127.0368237},
+    {number: "1239", lat: 36.9650096, lon: 127.0368097},
+    {number: "1218", lat: 36.9645879, lon: 127.0374309},
+    {number: "1274", lat: 36.9639848, lon: 127.0376876},
+    {number: "1237", lat: 36.9636632, lon: 127.0376773},
+    {number: "1216", lat: 36.9638011, lon: 127.0371831},
+    {number: "1244", lat: 36.9633586, lon: 127.0368407},
+    {number: "1247", lat: 36.9633248, lon: 127.0375889},
+    {number: "1212", lat: 36.9631334, lon: 127.0378051},
+    {number: "12008", lat: 36.9626648, lon: 127.0379145},
+    {number: "1235", lat: 36.9604938, lon: 127.0398376},
+    {number: "1228", lat: 36.9605699, lon: 127.0392058},
+    {number: "1241", lat: 36.9622835, lon: 127.0388414},
+    {number: "1207", lat: 36.9628931, lon: 127.0381902},
+    {number: "12103", lat: 36.9636749, lon: 127.0355329},
+    {number: "12100", lat: 36.9640947, lon: 127.0354721},
+    {number: "1283", lat: 36.9632116, lon: 127.0351107},
+    {number: "12600", lat: 36.9737217, lon: 127.0232362},
+    {number: "12601", lat: 36.9731777, lon: 127.0241515},
+    {number: "1291", lat: 36.9647261, lon: 127.0389407},
+    {number: "1289", lat: 36.9644675, lon: 127.0383092},
+    {number: "1417", lat: 36.9582941, lon: 127.0419787},
+    {number: "1407", lat: 36.9585219, lon: 127.0421952},
+    {number: "2002", lat: 36.9634334, lon: 127.0215357},
+    {number: "2001", lat: 36.9634475, lon: 127.02211},
+    {number: "2010", lat: 36.9629627, lon: 127.0219098},
+    {number: "2022", lat: 36.9630478, lon: 127.0223277},
+    {number: "2105", lat: 36.9632173, lon: 127.0224919},
+    {number: "2106", lat: 36.9630458, lon: 127.0227628},
+    {number: "2044", lat: 36.9622904, lon: 127.0232101},
+    {number: "2011", lat: 36.9623559, lon: 127.0223426},
+    {number: "2009", lat: 36.9618629, lon: 127.0227676},
+    {number: "2037", lat: 36.9620558, lon: 127.0215546},
+    {number: "2063", lat: 36.9606346, lon: 127.0239046},
+    {number: "2098", lat: 36.9613431, lon: 127.0221418},
+    {number: "2096", lat: 36.9607522, lon: 127.0206927},
+    {number: "2061", lat: 36.9599408, lon: 127.0225328},
+    {number: "2064", lat: 36.9601609, lon: 127.0245643},
+    {number: "2014", lat: 36.9606691, lon: 127.0228508},
+    {number: "1057", lat: 36.9599998, lon: 127.0211858},
+    {number: "1013", lat: 36.9592093, lon: 127.0207216},
+    {number: "2090", lat: 36.9590204, lon: 127.0202221},
+    {number: "2090", lat: 36.9585088, lon: 127.0201674},
+    {number: "882", lat: 36.9587669, lon: 127.0276161},
+    {number: "895", lat: 36.9562363, lon: 127.0281463},
+    {number: "868", lat: 36.9551813, lon: 127.0326614},
+    {number: "860", lat: 36.9553278, lon: 127.0341618},
+    {number: "889", lat: 36.9546663, lon: 127.035207},
+    {number: "859", lat: 36.9537902, lon: 127.0346603},
+    {number: "3020", lat: 36.9544281, lon: 127.0308394},
+    {number: "3032", lat: 36.9538319, lon: 127.030162},
+    {number: "3033", lat: 36.9534847, lon: 127.0320697},
+    {number: "3040", lat: 36.9551215, lon: 127.0301801},
+    {number: "3030", lat: 36.9539893, lon: 127.028352},
+    {number: "1044", lat: 36.9536142, lon: 127.0214828},
+    {number: "1949", lat: 36.9529322, lon: 127.0229199},
+    {number: "2031", lat: 36.953269, lon: 127.0209699},
+    {number: "1032", lat: 36.952898, lon: 127.0207138},
+    {number: "1033", lat: 36.9529422, lon: 127.02053},
+    {number: "1030", lat: 36.9527194, lon: 127.0202144},
+    {number: "1034", lat: 36.9529959, lon: 127.0203133},
+    {number: "1138", lat: 36.949624, lon: 127.0171778},
+    {number: "1130", lat: 36.9493896, lon: 127.0173965},
+    {number: "1132", lat: 36.9488488, lon: 127.0174335},
+    {number: "1133", lat: 36.9485861, lon: 127.0174648},
+    {number: "1131", lat: 36.9491306, lon: 127.0174267},
+    {number: "1127", lat: 36.9498579, lon: 127.0184144},
+    {number: "1137", lat: 36.9496727, lon: 127.0179762},
+    {number: "581", lat: 36.949274, lon: 127.0183654},
+    {number: "583", lat: 36.9489475, lon: 127.0182442},
+    {number: "584", lat: 36.9488593, lon: 127.0186303},
+    {number: "582", lat: 36.948913, lon: 127.0191379},
+    {number: "590", lat: 36.9492353, lon: 127.0188336},
+    {number: "1134", lat: 36.9482145, lon: 127.0171921},
+    {number: "579", lat: 36.9492068, lon: 127.0193309},
+    {number: "579", lat: 36.9490563, lon: 127.0197837},
+    {number: "657", lat: 36.9500802, lon: 127.0207037},
+    {number: "695", lat: 36.9503695, lon: 127.0225028},
+    {number: "696", lat: 36.950881, lon: 127.0224497},
+    {number: "637", lat: 36.9503194, lon: 127.0234185},
+    {number: "644", lat: 36.9506023, lon: 127.0238538},
+    {number: "1612", lat: 36.9512507, lon: 127.0248665},
+    {number: "1644", lat: 36.9506868, lon: 127.0241981},
+    {number: "616", lat: 36.9502999, lon: 127.0240524},
+    {number: "1646", lat: 36.9503807, lon: 127.0247489},
+    {number: "1645", lat: 36.9506931, lon: 127.0246735},
+    {number: "666", lat: 36.9506195, lon: 127.0251732},
+    {number: "1647", lat: 36.9506302, lon: 127.0254357},
+    {number: "1601", lat: 36.9507474, lon: 127.0275961},
+    {number: "627", lat: 36.9508633, lon: 127.0281329},
+    {number: "1750", lat: 36.9521371, lon: 127.0377425},
+    {number: "776", lat: 36.9512935, lon: 127.036077},
+    {number: "775", lat: 36.9516011, lon: 127.0359162},
+    {number: "1078A", lat: 36.9521326, lon: 127.0292056},
+    {number: "1078", lat: 36.9521751, lon: 127.0297068},
+    {number: "557", lat: 36.9489654, lon: 127.0201743},
+    {number: "550", lat: 36.9492819, lon: 127.0208862},
+    {number: "558", lat: 36.9490452, lon: 127.0208295},
+    {number: "511", lat: 36.9483123, lon: 127.0207001},
+    {number: "512", lat: 36.9468226, lon: 127.0210179},
+    {number: "514", lat: 36.9459194, lon: 127.0210293},
+    {number: "424", lat: 36.9455853, lon: 127.0206389},
+    {number: "542", lat: 36.9486895, lon: 127.0219303},
+    {number: "577", lat: 36.9488116, lon: 127.0216408},
+    {number: "510", lat: 36.9476083, lon: 127.0213132},
+    {number: "501", lat: 36.9492024, lon: 127.0222758},
+    {number: "544", lat: 36.9484411, lon: 127.0221539},
+    {number: "575", lat: 36.9481654, lon: 127.0218143},
+    {number: "573", lat: 36.9482037, lon: 127.0223647},
+    {number: "571", lat: 36.9483291, lon: 127.0231627},
+    {number: "572", lat: 36.9478518, lon: 127.0232238},
+    {number: "574", lat: 36.9478396, lon: 127.022386},
+    {number: "576", lat: 36.9477838, lon: 127.0218505},
+    {number: "534", lat: 36.9471529, lon: 127.0219899},
+    {number: "535", lat: 36.947478, lon: 127.0220701},
+    {number: "421", lat: 36.9472507, lon: 127.0236198},
+    {number: "570", lat: 36.9473747, lon: 127.0228444},
+    {number: "555", lat: 36.9489229, lon: 127.0231017},
+    {number: "360", lat: 36.9496662, lon: 127.0238401},
+    {number: "371", lat: 36.9492659, lon: 127.0239415},
+    {number: "370", lat: 36.9488171, lon: 127.0241058},
+    {number: "362", lat: 36.9484944, lon: 127.0243703},
+    {number: "400", lat: 36.9476499, lon: 127.0252081},
+    {number: "732", lat: 36.9498144, lon: 127.0300882},
+    {number: "725", lat: 36.9500562, lon: 127.0322818},
+    {number: "726", lat: 36.9501128, lon: 127.0312823},
+    {number: "753", lat: 36.9497828, lon: 127.0312672},
+    {number: "754", lat: 36.9497722, lon: 127.0321349},
+    {number: "755", lat: 36.9493552, lon: 127.0314458},
+    {number: "1770", lat: 36.9506454, lon: 127.0314256},
+    {number: "731", lat: 36.9490955, lon: 127.0302091},
+    {number: "737", lat: 36.9490448, lon: 127.0327899},
+    {number: "727", lat: 36.9484058, lon: 127.0305309},
+    {number: "370", lat: 36.948344, lon: 127.0300024},
+    {number: "740", lat: 36.9473373, lon: 127.0313341},
+    {number: "739", lat: 36.9473462, lon: 127.032436},
+    {number: "484", lat: 36.9473852, lon: 127.0290302},
+    {number: "481", lat: 36.9473785, lon: 127.0284626},
+    {number: "483", lat: 36.9472278, lon: 127.0279888},
+    {number: "449", lat: 36.9474294, lon: 127.0272811},
+    {number: "112", lat: 36.9481688, lon: 127.0254563},
+    {number: "118", lat: 36.9480788, lon: 127.0261557},
+    {number: "111", lat: 36.94834, lon: 127.0265844},
+    {number: "110", lat: 36.9479878, lon: 127.0271926},
+    {number: "113", lat: 36.9488048, lon: 127.0264899},
+    {number: "101", lat: 36.9492311, lon: 127.0258108},
+    {number: "375", lat: 36.9483455, lon: 127.0248177},
+    {number: "302", lat: 36.9493556, lon: 127.0249446},
+    {number: "301", lat: 36.9493211, lon: 127.0251725},
+    {number: "204", lat: 36.9498498, lon: 127.0269616},
+    {number: "123", lat: 36.9492033, lon: 127.027839},
+    {number: "125", lat: 36.9487858, lon: 127.0283488},
+    {number: "2097", lat: 36.9611892, lon: 127.0213216},
+    {number: "2270", lat: 36.9629749, lon: 127.0093273},
+    {number: "12380", lat: 36.9666075, lon: 127.0328372},
+    {number: "5545", lat: 36.9629511, lon: 126.9917299},
+    {number: "5541", lat: 36.9646593, lon: 126.9918522},
+    {number: "12420", lat: 36.9683057, lon: 127.0275951},
+    {number: "12385", lat: 36.9656964, lon: 127.0324952},
+    {number: "12110", lat: 36.9632539, lon: 127.0341048},
+    {number: "5540", lat: 36.9651232, lon: 126.9896794},
+    {number: "5550", lat: 36.9617943, lon: 126.9933748},
+    {number: "5502", lat: 36.9622337, lon: 126.9900877},
+    {number: "5911", lat: 36.9681414, lon: 126.9854247},
+    {number: "5908", lat: 36.9681127, lon: 126.9850941},
+    {number: "5901", lat: 36.9717316, lon: 126.9846803},
+    {number: "5903", lat: 36.9713689, lon: 126.9855284},
+    {number: "5904", lat: 36.971477, lon: 126.9863931},
+    {number: "1039", lat: 36.9522687, lon: 127.0201671},
+    {number: "714", lat: 36.9509303, lon: 127.0327928},
+    {number: "244", lat: 36.9502439, lon: 127.026837},
+    {number: "208", lat: 36.9503124, lon: 127.0279089},
+    {number: "365", lat: 36.9481207, lon: 127.0238884},
+    {number: "364", lat: 36.9484476, lon: 127.0238451},
+    {number: "366", lat: 36.9481486, lon: 127.0241647},
+    {number: "363", lat: 36.9484754, lon: 127.0241214},
+    {number: "367", lat: 36.9481676, lon: 127.0244135},
+    {number: "300", lat: 36.9496307, lon: 127.0253104},
+    {number: "8240", lat: 36.9740548, lon: 127.013668},
+    {number: "8710", lat: 36.9824546, lon: 126.9901459},
+    {number: "537", lat: 36.9472614, lon: 127.0224539},
+    {number: "427", lat: 36.946882, lon: 127.0225527},
+    {number: "2109", lat: 36.9626775, lon: 127.0226113},
+    {number: "2092", lat: 36.9593428, lon: 127.0197774},
+    {number: "2091", lat: 36.9595729, lon: 127.019642},
+    {number: "2040", lat: 36.9514675, lon: 127.0240203},
+    {number: "6827", lat: 36.9742696, lon: 126.992909},
+    {number: "6824", lat: 36.9746279, lon: 126.9919496},
+    {number: "6830", lat: 36.9736431, lon: 126.9925317},
+    {number: "400A", lat: 36.9473873, lon: 127.0242603},
+    {number: "6106", lat: 36.9683088, lon: 127.0130685},
+    {number: "6390", lat: 36.9677711, lon: 127.0055048},
+    {number: "6392", lat: 36.9675181, lon: 127.0074865},
+    {number: "6391", lat: 36.9678683, lon: 127.0064219},
+    {number: "6070", lat: 36.9653803, lon: 127.0102666},
+    {number: "6060", lat: 36.9662743, lon: 127.0107212},
+    {number: "6050", lat: 36.9663458, lon: 127.0117969},
+    {number: "1432", lat: 36.9575052, lon: 127.0426664},
+    {number: "1330", lat: 36.96458, lon: 127.0378404}
+];
 
-    let map, lightLayer, darkLayer, isDark = false;
+    const map = L.map('map').setView([36.9535, 127.0381], 14);
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initMap();
-      themeToggle.addEventListener('click', toggleTheme);
+    L.tileLayer('https://tile.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    const buildingMarkers = [];
+
+    function updateBuildingLabels() {
+        const zoom = map.getZoom();
+        buildingMarkers.forEach(marker => {
+            if (zoom >= 17) {
+                marker.addTo(map);
+            } else {
+                map.removeLayer(marker);
+            }
+        });
+    }
+
+    buildings.forEach(b => {
+        const label = L.marker([b.lat, b.lon], {
+            icon: L.divIcon({
+                className: 'building-label',
+                html: b.number,
+                iconSize: [30, 12],
+                iconAnchor: [15, 6]
+            })
+        });
+        buildingMarkers.push(label);
     });
 
-    function initMap() {
-      loadingIndicator.style.display = 'flex';
-
-      const humphreysCenter = [36.9535, 127.0381];
-      map = L.map('map', { zoomControl: false }).setView(humphreysCenter, 14);
-
-      // Carto Light/Dark
-      lightLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
-        subdomains: 'abcd', maxZoom: 20
-      }).addTo(map);
-
-      darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors &copy; <a href="https://www.carto.com/">CARTO</a>',
-        subdomains: 'abcd', maxZoom: 20
-      });
-
-      // 정류장 마커
-      busStops.forEach(stop => {
-        const marker = L.marker([stop.lat, stop.lon]).addTo(map);
-        marker.bindPopup(`<b>${stop.name}</b><br>${stop.description}`);
-        marker.on('click', () => displaySchedule(stop));
-      });
-
-      // 건물번호 라벨 (항상 보이는 텍스트)
-      buildings.forEach(b => {
-        const labelIcon = L.divIcon({
-          className: 'building-label',
-          html: `<span>${b.number}</span>`,
-          iconSize: [0, 0],  // 실제 박스는 CSS로, 포인터 영향 없게
-          iconAnchor: [0, 0]
-        });
-        L.marker([b.lat, b.lon], { icon: labelIcon, interactive: false }).addTo(map);
-      });
-
-      // 로딩 종료
-      setTimeout(() => { loadingIndicator.style.display = 'none'; }, 800);
-    }
-
-    function toggleTheme() {
-      if (isDark) {
-        map.removeLayer(darkLayer);
-        lightLayer.addTo(map);
-        document.body.classList.remove('dark');
-        themeToggle.textContent = 'Dark';
-        isDark = false;
-      } else {
-        map.removeLayer(lightLayer);
-        darkLayer.addTo(map);
-        document.body.classList.add('dark');
-        themeToggle.textContent = 'Light';
-        isDark = true;
-      }
-    }
-
-    function displaySchedule(stop) {
-      scheduleTitle.textContent = `${stop.name} 시간표`;
-      let html = `<p class="mb-2">${stop.description}</p><ul class="list-disc pl-5">`;
-      for (const route in stop.routes) {
-        html += `<li><strong>${route}:</strong> ${stop.routes[route].join(', ')}</li>`;
-      }
-      html += `</ul><p class="mt-4 text-sm text
+    map.on('zoomend', updateBuildingLabels);
+    updateBuildingLabels();
+    </script>
+</body>
+</html>
