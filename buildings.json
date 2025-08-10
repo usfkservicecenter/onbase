@@ -1,1907 +1,1987 @@
 [
   {
-    "number": "yes",
     "lat": 36.9511576,
-    "lon": 127.0277084
+    "lon": 127.0277084,
+    "addr:housenumber": "1603"
   },
   {
-    "number": "yes",
     "lat": 36.9485075,
-    "lon": 127.0277354
+    "lon": 127.0277354,
+    "addr:housenumber": "121;122",
+    "name": "Humphreys Army Lodge"
   },
   {
-    "number": "yes",
     "lat": 36.977423,
-    "lon": 126.9936946
+    "lon": 126.9936946,
+    "addr:housenumber": "7410"
   },
   {
-    "number": "yes",
     "lat": 36.976526,
-    "lon": 126.9928995
+    "lon": 126.9928995,
+    "addr:housenumber": "7413"
   },
   {
-    "number": "yes",
     "lat": 36.976078,
-    "lon": 126.9929788
+    "lon": 126.9929788,
+    "addr:housenumber": "7411"
   },
   {
-    "number": "yes",
     "lat": 36.9755718,
-    "lon": 126.9945497
+    "lon": 126.9945497,
+    "addr:housenumber": "7434"
   },
   {
-    "number": "yes",
     "lat": 36.9760013,
-    "lon": 126.994457
+    "lon": 126.994457,
+    "addr:housenumber": "7435"
   },
   {
-    "number": "yes",
     "lat": 36.9768916,
-    "lon": 126.9952253
+    "lon": 126.9952253,
+    "addr:housenumber": "7430"
   },
   {
-    "number": "yes",
     "lat": 36.9750489,
-    "lon": 126.9960775
+    "lon": 126.9960775,
+    "addr:housenumber": "7437"
   },
   {
-    "number": "yes",
     "lat": 36.9753089,
-    "lon": 126.9965365
+    "lon": 126.9965365,
+    "addr:housenumber": "7436"
   },
   {
-    "number": "yes",
     "lat": 36.976383,
-    "lon": 126.9967617
+    "lon": 126.9967617,
+    "addr:housenumber": "7440"
   },
   {
-    "number": "yes",
     "lat": 36.9744279,
-    "lon": 126.997965
+    "lon": 126.997965,
+    "addr:housenumber": "7321"
   },
   {
-    "number": "yes",
     "lat": 36.9748694,
-    "lon": 126.997872
+    "lon": 126.997872,
+    "addr:housenumber": "7320"
   },
   {
-    "number": "yes",
     "lat": 36.9757692,
-    "lon": 126.9986104
+    "lon": 126.9986104,
+    "addr:housenumber": "7325"
   },
   {
-    "number": "yes",
     "lat": 36.9749607,
-    "lon": 127.0000083
+    "lon": 127.0000083,
+    "addr:housenumber": "8310"
   },
   {
-    "number": "yes",
     "lat": 36.9735769,
-    "lon": 126.9994831
+    "lon": 126.9994831,
+    "addr:housenumber": "7316"
   },
   {
-    "number": "yes",
     "lat": 36.9738535,
-    "lon": 126.999926
+    "lon": 126.999926,
+    "addr:housenumber": "7315"
   },
   {
-    "number": "yes",
     "lat": 36.9731675,
-    "lon": 127.0007125
+    "lon": 127.0007125,
+    "addr:housenumber": "7309"
   },
   {
-    "number": "yes",
     "lat": 36.9736066,
-    "lon": 127.0006303
+    "lon": 127.0006303,
+    "addr:housenumber": "7310"
   },
   {
-    "number": "yes",
     "lat": 36.9738633,
-    "lon": 127.0010818
+    "lon": 127.0010818,
+    "addr:housenumber": "7314"
   },
   {
-    "number": "yes",
     "lat": 36.9744607,
-    "lon": 127.0015026
+    "lon": 127.0015026,
+    "addr:housenumber": "8300"
   },
   {
-    "number": "yes",
     "lat": 36.9741664,
-    "lon": 127.0036049
+    "lon": 127.0036049,
+    "addr:housenumber": "7240"
   },
   {
-    "number": "yes",
     "lat": 36.9735504,
-    "lon": 127.0033212
+    "lon": 127.0033212,
+    "addr:housenumber": "7241"
   },
   {
-    "number": "yes",
     "lat": 36.9732796,
-    "lon": 127.0028693
+    "lon": 127.0028693,
+    "addr:housenumber": "7242"
   },
   {
-    "number": "yes",
     "lat": 36.9728488,
-    "lon": 127.002973
+    "lon": 127.002973,
+    "addr:housenumber": "7243"
   },
   {
-    "number": "yes",
     "lat": 36.9742972,
-    "lon": 126.9998455
+    "lon": 126.9998455,
+    "addr:housenumber": "7319"
   },
   {
-    "number": "yes",
     "lat": 36.9751164,
-    "lon": 126.9983175
+    "lon": 126.9983175,
+    "addr:housenumber": "7324"
   },
   {
-    "number": "yes",
     "lat": 36.9757366,
-    "lon": 126.9964513
+    "lon": 126.9964513,
+    "addr:housenumber": "7441"
   },
   {
-    "number": "yes",
     "lat": 36.976251,
-    "lon": 126.9948988
+    "lon": 126.9948988,
+    "addr:housenumber": "7431"
   },
   {
-    "number": "yes",
     "lat": 36.976777,
-    "lon": 126.9933474
+    "lon": 126.9933474,
+    "addr:housenumber": "7412"
   },
   {
-    "number": "yes",
     "lat": 36.9767439,
-    "lon": 126.9909074
+    "lon": 126.9909074,
+    "addr:housenumber": "7500"
   },
   {
-    "number": "yes",
     "lat": 36.9774541,
-    "lon": 126.9912807
+    "lon": 126.9912807,
+    "addr:housenumber": "7505"
   },
   {
-    "number": "yes",
     "lat": 36.9773783,
-    "lon": 126.9889933
+    "lon": 126.9889933,
+    "addr:housenumber": "7514"
   },
   {
-    "number": "yes",
     "lat": 36.9780811,
-    "lon": 126.989373
+    "lon": 126.989373,
+    "addr:housenumber": "7519"
   },
   {
-    "number": "yes",
     "lat": 36.9778776,
-    "lon": 126.9887567
+    "lon": 126.9887567,
+    "addr:housenumber": "7515"
   },
   {
-    "number": "yes",
     "lat": 36.9789917,
-    "lon": 126.9898307
+    "lon": 126.9898307,
+    "addr:housenumber": "7520"
   },
   {
-    "number": "yes",
     "lat": 36.97834,
-    "lon": 126.9917248
+    "lon": 126.9917248,
+    "addr:housenumber": "7506"
   },
   {
-    "number": "yes",
     "lat": 36.9769545,
-    "lon": 126.991528
+    "lon": 126.991528,
+    "addr:housenumber": "7503"
   },
   {
-    "number": "yes",
     "lat": 36.9783345,
-    "lon": 126.9861255
+    "lon": 126.9861255,
+    "addr:housenumber": "7550"
   },
   {
-    "number": "yes",
     "lat": 36.9785986,
-    "lon": 126.9865793
+    "lon": 126.9865793,
+    "addr:housenumber": "7553"
   },
   {
-    "number": "yes",
     "lat": 36.9790446,
-    "lon": 126.9864953
+    "lon": 126.9864953,
+    "addr:housenumber": "7555"
   },
   {
-    "number": "yes",
     "lat": 36.9796778,
-    "lon": 126.9868022
+    "lon": 126.9868022,
+    "addr:housenumber": "7556"
   },
   {
-    "number": "yes",
     "lat": 36.9794444,
-    "lon": 126.9848588
+    "lon": 126.9848588,
+    "addr:housenumber": "7621"
   },
   {
-    "number": "yes",
     "lat": 36.9799546,
-    "lon": 126.9850289
+    "lon": 126.9850289,
+    "addr:housenumber": "7626"
   },
   {
-    "number": "yes",
     "lat": 36.9807938,
-    "lon": 126.9854677
+    "lon": 126.9854677,
+    "addr:housenumber": "7628"
   },
   {
-    "number": "yes",
     "lat": 36.9723569,
-    "lon": 127.0045031
+    "lon": 127.0045031,
+    "addr:housenumber": "7233"
   },
   {
-    "number": "yes",
     "lat": 36.972591,
-    "lon": 127.0049388
+    "lon": 127.0049388,
+    "addr:housenumber": "7232"
   },
   {
-    "number": "yes",
     "lat": 36.9730181,
-    "lon": 127.0048415
+    "lon": 127.0048415,
+    "addr:housenumber": "7231"
   },
   {
-    "number": "yes",
     "lat": 36.9736482,
-    "lon": 127.0051794
+    "lon": 127.0051794,
+    "addr:housenumber": "7230"
   },
   {
-    "number": "yes",
     "lat": 36.9718295,
-    "lon": 127.0060101
+    "lon": 127.0060101,
+    "addr:housenumber": "7213"
   },
   {
-    "number": "yes",
     "lat": 36.9720807,
-    "lon": 127.0064523
+    "lon": 127.0064523,
+    "addr:housenumber": "7212"
   },
   {
-    "number": "yes",
     "lat": 36.9725074,
-    "lon": 127.0063537
+    "lon": 127.0063537,
+    "addr:housenumber": "7211"
   },
   {
-    "number": "yes",
     "lat": 36.9731388,
-    "lon": 127.006686
+    "lon": 127.006686,
+    "addr:housenumber": "7210"
   },
   {
-    "number": "yes",
     "lat": 36.9718649,
-    "lon": 127.0082641
+    "lon": 127.0082641,
+    "addr:housenumber": "7131"
   },
   {
-    "number": "yes",
     "lat": 36.9713675,
-    "lon": 127.0097887
+    "lon": 127.0097887,
+    "addr:housenumber": "7121"
   },
   {
-    "number": "yes",
     "lat": 36.9708557,
-    "lon": 127.0113182
+    "lon": 127.0113182,
+    "addr:housenumber": "7111"
   },
   {
-    "number": "yes",
     "lat": 36.9716308,
-    "lon": 127.00782
+    "lon": 127.00782,
+    "addr:housenumber": "7132"
   },
   {
-    "number": "yes",
     "lat": 36.9709466,
-    "lon": 127.0098971
+    "lon": 127.0098971,
+    "addr:housenumber": "7122"
   },
   {
-    "number": "yes",
     "lat": 36.9704368,
-    "lon": 127.0114216
+    "lon": 127.0114216,
+    "addr:housenumber": "7112"
   },
   {
-    "number": "yes",
     "lat": 36.9711998,
-    "lon": 127.0079159
+    "lon": 127.0079159,
+    "addr:housenumber": "7133"
   },
   {
-    "number": "yes",
     "lat": 36.9706988,
-    "lon": 127.0094661
+    "lon": 127.0094661,
+    "addr:housenumber": "7123"
   },
   {
-    "number": "yes",
     "lat": 36.970183,
-    "lon": 127.0109906
+    "lon": 127.0109906,
+    "addr:housenumber": "7113"
   },
   {
-    "number": "yes",
     "lat": 36.9725136,
-    "lon": 127.0086127
+    "lon": 127.0086127,
+    "addr:housenumber": "7130"
   },
   {
-    "number": "yes",
     "lat": 36.9720141,
-    "lon": 127.0101382
+    "lon": 127.0101382,
+    "addr:housenumber": "7120"
   },
   {
-    "number": "yes",
     "lat": 36.9715001,
-    "lon": 127.0116682
+    "lon": 127.0116682,
+    "addr:housenumber": "7110"
   },
   {
-    "number": "yes",
     "lat": 36.9697495,
-    "lon": 127.0125043
+    "lon": 127.0125043,
+    "addr:housenumber": "7030"
   },
   {
-    "number": "yes",
     "lat": 36.9695972,
-    "lon": 127.0130079
+    "lon": 127.0130079,
+    "addr:housenumber": "7031"
   },
   {
-    "number": "yes",
     "lat": 36.9702643,
-    "lon": 127.0131427
+    "lon": 127.0131427,
+    "addr:housenumber": "7032"
   },
   {
-    "number": "yes",
     "lat": 36.9719859,
-    "lon": 127.0139631
+    "lon": 127.0139631,
+    "addr:housenumber": "7040"
   },
   {
-    "number": "yes",
     "lat": 36.9693604,
-    "lon": 127.0143229
+    "lon": 127.0143229,
+    "addr:housenumber": "7020"
   },
   {
-    "number": "yes",
     "lat": 36.9691642,
-    "lon": 127.0158722
+    "lon": 127.0158722,
+    "addr:housenumber": "7010",
+    "name": "Transportation Motor Pool (TMP)"
   },
   {
-    "number": "yes",
     "lat": 36.9687299,
-    "lon": 127.0171821
+    "lon": 127.0171821,
+    "addr:housenumber": "7000"
   },
   {
-    "number": "yes",
     "lat": 36.9764903,
-    "lon": 127.0148163
+    "lon": 127.0148163,
+    "addr:housenumber": "8110"
   },
   {
-    "number": "apartments",
     "lat": 36.9715186,
-    "lon": 127.0005687
+    "lon": 127.0005687,
+    "addr:housenumber": "6705"
   },
   {
-    "number": "yes",
     "lat": 36.9725264,
-    "lon": 126.9991164
+    "lon": 126.9991164,
+    "addr:housenumber": "6702",
+    "name": "Pittman Dining Facility"
   },
   {
-    "number": "apartments",
     "lat": 36.971013,
-    "lon": 126.999863
+    "lon": 126.999863,
+    "addr:housenumber": "6706"
   },
   {
-    "number": "apartments",
     "lat": 36.9713286,
-    "lon": 126.9987391
+    "lon": 126.9987391,
+    "addr:housenumber": "6707"
   },
   {
-    "number": "apartments",
     "lat": 36.9717528,
-    "lon": 126.997674
+    "lon": 126.997674,
+    "addr:housenumber": "6708"
   },
   {
-    "number": "apartments",
     "lat": 36.972481,
-    "lon": 126.9976271
+    "lon": 126.9976271,
+    "addr:housenumber": "6704"
   },
   {
-    "number": "yes",
     "lat": 36.9731908,
-    "lon": 126.9970464
+    "lon": 126.9970464,
+    "addr:housenumber": "7300"
   },
   {
-    "number": "chapel",
     "lat": 36.9739176,
-    "lon": 126.9958771
+    "lon": 126.9958771,
+    "addr:housenumber": "6800",
+    "name": "Warrior Chapel"
   },
   {
-    "number": "yes",
     "lat": 36.9729173,
-    "lon": 126.9953156
+    "lon": 126.9953156,
+    "addr:housenumber": "6803",
+    "name": "Warrior Shoppette"
   },
   {
-    "number": "yes",
     "lat": 36.9729548,
-    "lon": 126.9945979
+    "lon": 126.9945979,
+    "addr:housenumber": "6806",
+    "name": "Family Theater"
   },
   {
-    "number": "yes",
     "lat": 36.9730799,
-    "lon": 126.9937937
+    "lon": 126.9937937,
+    "addr:housenumber": "6807",
+    "name": "Warrior Zone"
   },
   {
-    "number": "yes",
     "lat": 36.9741728,
-    "lon": 126.9947872
+    "lon": 126.9947872,
+    "addr:housenumber": "6815",
+    "name": "Sitman Fitness Center"
   },
   {
-    "number": "yes",
     "lat": 36.9736582,
-    "lon": 126.9937337
+    "lon": 126.9937337,
+    "addr:housenumber": "6809",
+    "name": "Cowan Post Office"
   },
   {
-    "number": "apartments",
     "lat": 36.9740133,
-    "lon": 126.9915754
+    "lon": 126.9915754,
+    "addr:housenumber": "6821"
   },
   {
-    "number": "parking",
     "lat": 36.975073,
-    "lon": 126.9927078
+    "lon": 126.9927078,
+    "addr:housenumber": "6820"
   },
   {
-    "number": "yes",
     "lat": 36.976479,
-    "lon": 126.986907
+    "lon": 126.986907,
+    "addr:housenumber": "6957"
   },
   {
-    "number": "yes",
     "lat": 36.9755373,
-    "lon": 126.9877635
+    "lon": 126.9877635,
+    "addr:housenumber": "6953",
+    "name": "Central Issue Facility"
   },
   {
-    "number": "yes",
     "lat": 36.9736032,
-    "lon": 126.9867818
+    "lon": 126.9867818,
+    "addr:housenumber": "6950",
+    "name": "Central Issue Facility"
   },
   {
-    "number": "yes",
     "lat": 36.9755716,
-    "lon": 126.9866092
+    "lon": 126.9866092,
+    "addr:housenumber": "6961"
   },
   {
-    "number": "yes",
     "lat": 36.9744636,
-    "lon": 126.9859774
+    "lon": 126.9859774,
+    "addr:housenumber": "6963"
   },
   {
-    "number": "yes",
     "lat": 36.9682441,
-    "lon": 127.0025287
+    "lon": 127.0025287,
+    "addr:housenumber": "6420"
   },
   {
-    "number": "yes",
     "lat": 36.9676376,
-    "lon": 127.0020857
+    "lon": 127.0020857,
+    "addr:housenumber": "6430"
   },
   {
-    "number": "yes",
     "lat": 36.967669,
-    "lon": 127.0031189
+    "lon": 127.0031189,
+    "addr:housenumber": "6400",
+    "name": "LTG Timothy J. Maude Hall (One Stop)"
   },
   {
-    "number": "yes",
     "lat": 36.9688303,
-    "lon": 127.0026927
+    "lon": 127.0026927,
+    "addr:housenumber": "6410"
   },
   {
-    "number": "yes",
     "lat": 36.9709927,
-    "lon": 127.0044031
+    "lon": 127.0044031,
+    "addr:housenumber": "6500",
+    "name": "2nd Infantry Division Headquarters"
   },
   {
-    "number": "house",
     "lat": 36.9654689,
-    "lon": 126.996965
+    "lon": 126.996965,
+    "addr:housenumber": "5824"
   },
   {
-    "number": "house",
     "lat": 36.9652829,
-    "lon": 126.9973271
+    "lon": 126.9973271,
+    "addr:housenumber": "5826"
   },
   {
-    "number": "house",
     "lat": 36.9656471,
-    "lon": 126.9966311
+    "lon": 126.9966311,
+    "addr:housenumber": "5822"
   },
   {
-    "number": "house",
     "lat": 36.9658158,
-    "lon": 126.9962938
+    "lon": 126.9962938,
+    "addr:housenumber": "5820"
   },
   {
-    "number": "house",
     "lat": 36.9659904,
-    "lon": 126.995945
+    "lon": 126.995945,
+    "addr:housenumber": "5818"
   },
   {
-    "number": "house",
     "lat": 36.9661153,
-    "lon": 126.9955609
+    "lon": 126.9955609,
+    "addr:housenumber": "5816"
   },
   {
-    "number": "house",
     "lat": 36.9657629,
-    "lon": 126.9974244
+    "lon": 126.9974244,
+    "addr:housenumber": "5823"
   },
   {
-    "number": "house",
     "lat": 36.9659359,
-    "lon": 126.997096
+    "lon": 126.997096,
+    "addr:housenumber": "5821"
   },
   {
-    "number": "house",
     "lat": 36.966112,
-    "lon": 126.996758
+    "lon": 126.996758,
+    "addr:housenumber": "5819"
   },
   {
-    "number": "house",
     "lat": 36.9662925,
-    "lon": 126.9964024
+    "lon": 126.9964024,
+    "addr:housenumber": "5817"
   },
   {
-    "number": "house",
     "lat": 36.9666016,
-    "lon": 126.995964
+    "lon": 126.995964,
+    "addr:housenumber": "5809"
   },
   {
-    "number": "house",
     "lat": 36.9666558,
-    "lon": 126.9963659
+    "lon": 126.9963659,
+    "addr:housenumber": "5807"
   },
   {
-    "number": "house",
     "lat": 36.9665472,
-    "lon": 126.9969635
+    "lon": 126.9969635,
+    "addr:housenumber": "5805"
   },
   {
-    "number": "house",
     "lat": 36.9663779,
-    "lon": 126.9973331
+    "lon": 126.9973331,
+    "addr:housenumber": "5803"
   },
   {
-    "number": "house",
     "lat": 36.9661453,
-    "lon": 126.9976573
+    "lon": 126.9976573,
+    "addr:housenumber": "5801"
   },
   {
-    "number": "house",
     "lat": 36.9664562,
-    "lon": 126.9980096
+    "lon": 126.9980096,
+    "addr:housenumber": "5802"
   },
   {
-    "number": "house",
     "lat": 36.9666886,
-    "lon": 126.9977278
+    "lon": 126.9977278,
+    "addr:housenumber": "5804"
   },
   {
-    "number": "house",
     "lat": 36.9668625,
-    "lon": 126.9973993
+    "lon": 126.9973993,
+    "addr:housenumber": "5806"
   },
   {
-    "number": "house",
     "lat": 36.966985,
-    "lon": 126.9970323
+    "lon": 126.9970323,
+    "addr:housenumber": "5808"
   },
   {
-    "number": "house",
     "lat": 36.9670433,
-    "lon": 126.9966241
+    "lon": 126.9966241,
+    "addr:housenumber": "5810"
   },
   {
-    "number": "house",
     "lat": 36.9664,
-    "lon": 126.9950681
+    "lon": 126.9950681,
+    "addr:housenumber": "5813"
   },
   {
-    "number": "house",
     "lat": 36.966912,
-    "lon": 126.9956626
+    "lon": 126.9956626,
+    "addr:housenumber": "5812"
   },
   {
-    "number": "house",
     "lat": 36.9670555,
-    "lon": 126.9962019
+    "lon": 126.9962019,
+    "addr:housenumber": "5811"
   },
   {
-    "number": "apartments",
     "lat": 36.9723605,
-    "lon": 127.0005202
+    "lon": 127.0005202,
+    "addr:housenumber": "6701"
   },
   {
-    "number": "apartments",
     "lat": 36.9730764,
-    "lon": 126.9983361
+    "lon": 126.9983361,
+    "addr:housenumber": "6703"
   },
   {
-    "number": "apartments",
     "lat": 36.9701397,
-    "lon": 127.0073093
+    "lon": 127.0073093,
+    "addr:housenumber": "6322"
   },
   {
-    "number": "apartments",
     "lat": 36.9693962,
-    "lon": 127.009467
+    "lon": 127.009467,
+    "addr:housenumber": "6320"
   },
   {
-    "number": "apartments",
     "lat": 36.9680952,
-    "lon": 127.0088031
+    "lon": 127.0088031,
+    "addr:housenumber": "6326"
   },
   {
-    "number": "apartments",
     "lat": 36.9683865,
-    "lon": 127.0076943
+    "lon": 127.0076943,
+    "addr:housenumber": "6325"
   },
   {
-    "number": "apartments",
     "lat": 36.9688233,
-    "lon": 127.006647
+    "lon": 127.006647,
+    "addr:housenumber": "6324"
   },
   {
-    "number": "apartments",
     "lat": 36.9695628,
-    "lon": 127.0065528
+    "lon": 127.0065528,
+    "addr:housenumber": "6323"
   },
   {
-    "number": "yes",
     "lat": 36.9694806,
-    "lon": 127.0083973
+    "lon": 127.0083973,
+    "addr:housenumber": "6321",
+    "name": "Spartan Dining Facility"
   },
   {
-    "number": "yes",
     "lat": 36.9675357,
-    "lon": 127.0098709
+    "lon": 127.0098709,
+    "addr:housenumber": "6317",
+    "name": "Burke Child Youth Services SKIES Center"
   },
   {
-    "number": "yes",
     "lat": 36.9688337,
-    "lon": 127.0106669
+    "lon": 127.0106669,
+    "addr:housenumber": "6315"
   },
   {
-    "number": "yes",
     "lat": 36.9655861,
-    "lon": 127.0078752
+    "lon": 127.0078752,
+    "addr:housenumber": "6380",
+    "name": "Fire Station #4"
   },
   {
-    "number": "yes",
     "lat": 36.9654541,
-    "lon": 127.0086671
+    "lon": 127.0086671,
+    "addr:housenumber": "6365"
   },
   {
-    "number": "chapel",
     "lat": 36.9662522,
-    "lon": 127.0093661
+    "lon": 127.0093661,
+    "addr:housenumber": "6360",
+    "name": "Pacific Victors Chapel"
   },
   {
-    "number": "yes",
     "lat": 36.966875,
-    "lon": 127.0095973
+    "lon": 127.0095973,
+    "addr:housenumber": "6370",
+    "name": "Sgt. Shin W. Kim Medical Clinic"
   },
   {
-    "number": "yes",
     "lat": 36.9672307,
-    "lon": 127.0085706
+    "lon": 127.0085706,
+    "addr:housenumber": "6350",
+    "name": "Smith Youth Teen Center"
   },
   {
-    "number": "yes",
     "lat": 36.9677338,
-    "lon": 127.0126968
+    "lon": 127.0126968,
+    "addr:housenumber": "6100",
+    "name": "Korea Battle Simulation Center (KBSC)"
   },
   {
-    "number": "yes",
     "lat": 36.9677995,
-    "lon": 127.0116415
+    "lon": 127.0116415,
+    "addr:housenumber": "6110",
+    "name": "Vandal Training Complex"
   },
   {
-    "number": "yes",
     "lat": 36.9666685,
-    "lon": 127.0138312
+    "lon": 127.0138312,
+    "addr:housenumber": "6120",
+    "name": "Eighth Army Wightman NCO Academy"
   },
   {
-    "number": "yes",
     "lat": 36.9670773,
-    "lon": 127.0165122
+    "lon": 127.0165122,
+    "addr:housenumber": "6140",
+    "name": "Directorate of Public Works (DPW)"
   },
   {
-    "number": "yes",
     "lat": 36.9636781,
-    "lon": 127.0164784
+    "lon": 127.0164784,
+    "addr:housenumber": "6008"
   },
   {
-    "number": "yes",
     "lat": 36.9636263,
-    "lon": 127.0000602
+    "lon": 127.0000602,
+    "addr:housenumber": "5730",
+    "name": "Main Post Office"
   },
   {
-    "number": "yes",
     "lat": 36.9658039,
-    "lon": 126.9996912
+    "lon": 126.9996912,
+    "addr:housenumber": "5700",
+    "name": "Humphreys Main Exchange"
   },
   {
-    "number": "yes",
     "lat": 36.9646035,
-    "lon": 127.0022825
+    "lon": 127.0022825,
+    "addr:housenumber": "5725",
+    "name": "Commissary"
   },
   {
-    "number": "yes",
     "lat": 36.9587801,
-    "lon": 127.0233989
+    "lon": 127.0233989,
+    "addr:housenumber": "2110"
   },
   {
-    "number": "yes",
     "lat": 36.9750168,
-    "lon": 127.0219433
+    "lon": 127.0219433,
+    "addr:housenumber": "12700"
   },
   {
-    "number": "yes",
     "lat": 36.9741931,
-    "lon": 127.0212586
+    "lon": 127.0212586,
+    "addr:housenumber": "12710"
   },
   {
-    "number": "yes",
     "lat": 36.9718328,
-    "lon": 127.0248174
+    "lon": 127.0248174,
+    "addr:housenumber": "13000",
+    "name": "CFC Annex"
   },
   {
-    "number": "yes",
     "lat": 36.9702701,
-    "lon": 127.0252452
+    "lon": 127.0252452,
+    "addr:housenumber": "13013",
+    "name": "ROK-US Combined Forces Command"
   },
   {
-    "number": "dormitory",
     "lat": 36.9706595,
-    "lon": 127.0256878
+    "lon": 127.0256878,
+    "addr:housenumber": "13014"
   },
   {
-    "number": "yes",
     "lat": 36.9709573,
-    "lon": 127.0243184
+    "lon": 127.0243184,
+    "addr:housenumber": "13007"
   },
   {
-    "number": "yes",
     "lat": 36.9713406,
-    "lon": 127.0238676
+    "lon": 127.0238676,
+    "addr:housenumber": "13004"
   },
   {
-    "number": "yes",
     "lat": 36.9696585,
-    "lon": 127.0261769
+    "lon": 127.0261769,
+    "addr:housenumber": "13019",
+    "name": "Friendship Hall"
   },
   {
-    "number": "yes",
     "lat": 36.9618084,
-    "lon": 126.996033
+    "lon": 126.996033,
+    "addr:housenumber": "5520",
+    "name": "Humphreys West Elementary School"
   },
   {
-    "number": "apartments",
     "lat": 36.957037,
-    "lon": 127.0144039
+    "lon": 127.0144039,
+    "addr:housenumber": "5103",
+    "name": "Chinook Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9577456,
-    "lon": 127.0141561
+    "lon": 127.0141561,
+    "addr:housenumber": "5102",
+    "name": "Apache Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9575518,
-    "lon": 127.0133025
+    "lon": 127.0133025,
+    "addr:housenumber": "5101",
+    "name": "Blackhawk Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9586681,
-    "lon": 127.0122184
+    "lon": 127.0122184,
+    "addr:housenumber": "5172",
+    "name": "Pershing Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9579658,
-    "lon": 127.0124661
+    "lon": 127.0124661,
+    "addr:housenumber": "5173",
+    "name": "Abrams Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9584744,
-    "lon": 127.0113679
+    "lon": 127.0113679,
+    "addr:housenumber": "5171",
+    "name": "Patton Tower"
   },
   {
-    "number": "yes",
     "lat": 36.9627049,
-    "lon": 127.010128
+    "lon": 127.010128,
+    "addr:housenumber": "2260",
+    "name": "Veterinary Treatment Facility"
   },
   {
-    "number": "yes",
     "lat": 36.962276,
-    "lon": 127.0111318
+    "lon": 127.0111318,
+    "addr:housenumber": "2250",
+    "name": "Automotive Skills Center"
   },
   {
-    "number": "yes",
     "lat": 36.9617362,
-    "lon": 127.0127189
+    "lon": 127.0127189,
+    "addr:housenumber": "2240",
+    "name": "Eighth United States Army Band"
   },
   {
-    "number": "chapel",
     "lat": 36.9607286,
-    "lon": 127.0150327
+    "lon": 127.0150327,
+    "addr:housenumber": "2230",
+    "name": "Four Chaplains Memorial Chapel"
   },
   {
-    "number": "yes",
     "lat": 36.9603138,
-    "lon": 127.0160863
+    "lon": 127.0160863,
+    "addr:housenumber": "2220",
+    "name": "Duke Memorial Library"
   },
   {
-    "number": "yes",
     "lat": 36.9587733,
-    "lon": 127.0250073
+    "lon": 127.0250073,
+    "addr:housenumber": "2111"
   },
   {
-    "number": "yes",
     "lat": 36.968161,
-    "lon": 127.0300019
+    "lon": 127.0300019,
+    "addr:housenumber": "12412",
+    "name": "United Nations Command"
   },
   {
-    "number": "yes",
     "lat": 36.9677829,
-    "lon": 127.0295915
+    "lon": 127.0295915,
+    "addr:housenumber": "12410",
+    "name": "United States Forces Korea"
   },
   {
-    "number": "yes",
     "lat": 36.9662579,
-    "lon": 127.0311552
+    "lon": 127.0311552,
+    "addr:housenumber": "12401"
   },
   {
-    "number": "yes",
     "lat": 36.9667976,
-    "lon": 127.0307143
+    "lon": 127.0307143,
+    "addr:housenumber": "12400",
+    "name": "Eighth United States Army"
   },
   {
-    "number": "apartments",
     "lat": 36.9638477,
-    "lon": 127.0396633
+    "lon": 127.0396633,
+    "addr:housenumber": "1294"
   },
   {
-    "number": "apartments",
     "lat": 36.9638239,
-    "lon": 127.0386022
+    "lon": 127.0386022,
+    "addr:housenumber": "12001"
   },
   {
-    "number": "apartments",
     "lat": 36.9638364,
-    "lon": 127.0391838
+    "lon": 127.0391838,
+    "addr:housenumber": "12002"
   },
   {
-    "number": "yes",
     "lat": 36.962857,
-    "lon": 127.039586
+    "lon": 127.039586,
+    "addr:housenumber": "1296",
+    "name": "Zoeckler Fitness Center"
   },
   {
-    "number": "yes",
     "lat": 36.9690473,
-    "lon": 127.0359462
+    "lon": 127.0359462,
+    "addr:housenumber": "12302",
+    "name": "Visitor Control Center (VCC)"
   },
   {
-    "number": "apartments",
     "lat": 36.9665175,
-    "lon": 127.038345
+    "lon": 127.038345,
+    "addr:housenumber": "12203"
   },
   {
-    "number": "apartments",
     "lat": 36.965849,
-    "lon": 127.0373943
+    "lon": 127.0373943,
+    "addr:housenumber": "12209"
   },
   {
-    "number": "apartments",
     "lat": 36.9664736,
-    "lon": 127.0373866
+    "lon": 127.0373866,
+    "addr:housenumber": "12200"
   },
   {
-    "number": "apartments",
     "lat": 36.9658601,
-    "lon": 127.0383704
+    "lon": 127.0383704,
+    "addr:housenumber": "12206"
   },
   {
-    "number": "yes",
     "lat": 36.965455,
-    "lon": 127.035307
+    "lon": 127.035307,
+    "addr:housenumber": "12106"
   },
   {
-    "number": "yes",
     "lat": 36.9643054,
-    "lon": 127.0378045
+    "lon": 127.0378045,
+    "addr:housenumber": "1219"
   },
   {
-    "number": "yes",
     "lat": 36.9647572,
-    "lon": 127.0368237
+    "lon": 127.0368237,
+    "addr:housenumber": "1240"
   },
   {
-    "number": "yes",
     "lat": 36.9650096,
-    "lon": 127.0368097
+    "lon": 127.0368097,
+    "addr:housenumber": "1239"
   },
   {
-    "number": "yes",
     "lat": 36.9645879,
-    "lon": 127.0374309
+    "lon": 127.0374309,
+    "addr:housenumber": "1218"
   },
   {
-    "number": "yes",
     "lat": 36.9639848,
-    "lon": 127.0376876
+    "lon": 127.0376876,
+    "addr:housenumber": "1274"
   },
   {
-    "number": "yes",
     "lat": 36.9636632,
-    "lon": 127.0376773
+    "lon": 127.0376773,
+    "addr:housenumber": "1237"
   },
   {
-    "number": "yes",
     "lat": 36.9638011,
-    "lon": 127.0371831
+    "lon": 127.0371831,
+    "addr:housenumber": "1216"
   },
   {
-    "number": "yes",
     "lat": 36.9633586,
-    "lon": 127.0368407
+    "lon": 127.0368407,
+    "addr:housenumber": "1244"
   },
   {
-    "number": "yes",
     "lat": 36.9633248,
-    "lon": 127.0375889
+    "lon": 127.0375889,
+    "addr:housenumber": "1247"
   },
   {
-    "number": "yes",
     "lat": 36.9631334,
-    "lon": 127.0378051
+    "lon": 127.0378051,
+    "addr:housenumber": "1212"
   },
   {
-    "number": "yes",
     "lat": 36.9626648,
-    "lon": 127.0379145
+    "lon": 127.0379145,
+    "addr:housenumber": "12008"
   },
   {
-    "number": "yes",
     "lat": 36.9604938,
-    "lon": 127.0398376
+    "lon": 127.0398376,
+    "addr:housenumber": "1235",
+    "name": "Fire Station #2"
   },
   {
-    "number": "yes",
     "lat": 36.9605699,
-    "lon": 127.0392058
+    "lon": 127.0392058,
+    "addr:housenumber": "1228",
+    "name": "Bonsa KATUSA Snack Bar"
   },
   {
-    "number": "yes",
     "lat": 36.9622835,
-    "lon": 127.0388414
+    "lon": 127.0388414,
+    "addr:housenumber": "1241"
   },
   {
-    "number": "yes",
     "lat": 36.9628931,
-    "lon": 127.0381902
+    "lon": 127.0381902,
+    "addr:housenumber": "1207"
   },
   {
-    "number": "yes",
     "lat": 36.9636749,
-    "lon": 127.0355329
+    "lon": 127.0355329,
+    "addr:housenumber": "12103"
   },
   {
-    "number": "yes",
     "lat": 36.9640947,
-    "lon": 127.0354721
+    "lon": 127.0354721,
+    "addr:housenumber": "12100"
   },
   {
-    "number": "yes",
     "lat": 36.9632116,
-    "lon": 127.0351107
+    "lon": 127.0351107,
+    "addr:housenumber": "1283"
   },
   {
-    "number": "yes",
     "lat": 36.9737217,
-    "lon": 127.0232362
+    "lon": 127.0232362,
+    "addr:housenumber": "12600",
+    "name": "US Army Corps of Engineers Far East District"
   },
   {
-    "number": "yes",
     "lat": 36.9731777,
-    "lon": 127.0241515
+    "lon": 127.0241515,
+    "addr:housenumber": "12601",
+    "name": "Consolidated Headquarters"
   },
   {
-    "number": "yes",
     "lat": 36.9647261,
-    "lon": 127.0389407
+    "lon": 127.0389407,
+    "addr:housenumber": "1291",
+    "name": "Provider Grill Dining Facility"
   },
   {
-    "number": "yes",
     "lat": 36.9644675,
-    "lon": 127.0383092
+    "lon": 127.0383092,
+    "addr:housenumber": "1289"
   },
   {
-    "number": "yes",
     "lat": 36.9582941,
-    "lon": 127.0419787
+    "lon": 127.0419787,
+    "addr:housenumber": "1417"
   },
   {
-    "number": "yes",
     "lat": 36.9585219,
-    "lon": 127.0421952
+    "lon": 127.0421952,
+    "addr:housenumber": "1407"
   },
   {
-    "number": "yes",
     "lat": 36.9634334,
-    "lon": 127.0215357
+    "lon": 127.0215357,
+    "addr:housenumber": "2002"
   },
   {
-    "number": "yes",
     "lat": 36.9634475,
-    "lon": 127.02211
+    "lon": 127.02211,
+    "addr:housenumber": "2001"
   },
   {
-    "number": "yes",
     "lat": 36.9629627,
-    "lon": 127.0219098
+    "lon": 127.0219098,
+    "addr:housenumber": "2010"
   },
   {
-    "number": "yes",
     "lat": 36.9630478,
-    "lon": 127.0223277
+    "lon": 127.0223277,
+    "addr:housenumber": "2022"
   },
   {
-    "number": "yes",
     "lat": 36.9632173,
-    "lon": 127.0224919
+    "lon": 127.0224919,
+    "addr:housenumber": "2105"
   },
   {
-    "number": "yes",
     "lat": 36.9630458,
-    "lon": 127.0227628
+    "lon": 127.0227628,
+    "addr:housenumber": "2106"
   },
   {
-    "number": "yes",
     "lat": 36.9622904,
-    "lon": 127.0232101
+    "lon": 127.0232101,
+    "addr:housenumber": "2044"
   },
   {
-    "number": "yes",
     "lat": 36.9623559,
-    "lon": 127.0223426
+    "lon": 127.0223426,
+    "addr:housenumber": "2011"
   },
   {
-    "number": "yes",
     "lat": 36.9618629,
-    "lon": 127.0227676
+    "lon": 127.0227676,
+    "addr:housenumber": "2009"
   },
   {
-    "number": "yes",
     "lat": 36.9620558,
-    "lon": 127.0215546
+    "lon": 127.0215546,
+    "addr:housenumber": "2037"
   },
   {
-    "number": "yes",
     "lat": 36.9606346,
-    "lon": 127.0239046
+    "lon": 127.0239046,
+    "addr:housenumber": "2063",
+    "name": "Turner Fitness Center"
   },
   {
-    "number": "apartments",
     "lat": 36.9613431,
-    "lon": 127.0221418
+    "lon": 127.0221418,
+    "addr:housenumber": "2098"
   },
   {
-    "number": "apartments",
     "lat": 36.9607522,
-    "lon": 127.0206927
+    "lon": 127.0206927,
+    "addr:housenumber": "2096"
   },
   {
-    "number": "apartments",
     "lat": 36.9599408,
-    "lon": 127.0225328
+    "lon": 127.0225328,
+    "addr:housenumber": "2061"
   },
   {
-    "number": "yes",
     "lat": 36.9601609,
-    "lon": 127.0245643
+    "lon": 127.0245643,
+    "addr:housenumber": "2064"
   },
   {
-    "number": "apartments",
     "lat": 36.9606691,
-    "lon": 127.0228508
+    "lon": 127.0228508,
+    "addr:housenumber": "2014"
   },
   {
-    "number": "apartments",
     "lat": 36.9599998,
-    "lon": 127.0211858
+    "lon": 127.0211858,
+    "addr:housenumber": "1057"
   },
   {
-    "number": "yes",
     "lat": 36.9592093,
-    "lon": 127.0207216
+    "lon": 127.0207216,
+    "addr:housenumber": "1013"
   },
   {
-    "number": "yes",
     "lat": 36.9590204,
-    "lon": 127.0202221
+    "lon": 127.0202221,
+    "addr:housenumber": "2090"
   },
   {
-    "number": "yes",
     "lat": 36.9585088,
-    "lon": 127.0201674
+    "lon": 127.0201674,
+    "addr:housenumber": "2090"
   },
   {
-    "number": "hangar",
     "lat": 36.9587669,
-    "lon": 127.0276161
+    "lon": 127.0276161,
+    "addr:housenumber": "882"
   },
   {
-    "number": "yes",
     "lat": 36.9562363,
-    "lon": 127.0281463
+    "lon": 127.0281463,
+    "addr:housenumber": "895"
   },
   {
-    "number": "yes",
     "lat": 36.9551813,
-    "lon": 127.0326614
+    "lon": 127.0326614,
+    "addr:housenumber": "868"
   },
   {
-    "number": "yes",
     "lat": 36.9553278,
-    "lon": 127.0341618
+    "lon": 127.0341618,
+    "addr:housenumber": "860"
   },
   {
-    "number": "yes",
     "lat": 36.9546663,
-    "lon": 127.035207
+    "lon": 127.035207,
+    "addr:housenumber": "889",
+    "name": "US Army Garrison Humphreys Fire Department"
   },
   {
-    "number": "yes",
     "lat": 36.9537902,
-    "lon": 127.0346603
+    "lon": 127.0346603,
+    "addr:housenumber": "859",
+    "name": "Law Enforcement Center"
   },
   {
-    "number": "yes",
     "lat": 36.9544281,
-    "lon": 127.0308394
+    "lon": 127.0308394,
+    "addr:housenumber": "3020",
+    "name": "Carius Dental Treatment Facility"
   },
   {
-    "number": "parking",
     "lat": 36.9538319,
-    "lon": 127.030162
+    "lon": 127.030162,
+    "addr:housenumber": "3032"
   },
   {
-    "number": "yes",
     "lat": 36.9534847,
-    "lon": 127.0320697
+    "lon": 127.0320697,
+    "addr:housenumber": "3033"
   },
   {
-    "number": "yes",
     "lat": 36.9551215,
-    "lon": 127.0301801
+    "lon": 127.0301801,
+    "addr:housenumber": "3040"
   },
   {
-    "number": "hospital",
     "lat": 36.9539893,
-    "lon": 127.028352
+    "lon": 127.028352,
+    "addr:housenumber": "3030"
   },
   {
-    "number": "yes",
     "lat": 36.9536142,
-    "lon": 127.0214828
+    "lon": 127.0214828,
+    "addr:housenumber": "1044"
   },
   {
-    "number": "yes",
     "lat": 36.9529322,
-    "lon": 127.0229199
+    "lon": 127.0229199,
+    "addr:housenumber": "1949",
+    "name": "Collier Community Fitness Center (Super Gym)"
   },
   {
-    "number": "yes",
     "lat": 36.953269,
-    "lon": 127.0209699
+    "lon": 127.0209699,
+    "addr:housenumber": "2031"
   },
   {
-    "number": "yes",
     "lat": 36.952898,
-    "lon": 127.0207138
+    "lon": 127.0207138,
+    "addr:housenumber": "1032"
   },
   {
-    "number": "yes",
     "lat": 36.9529422,
-    "lon": 127.02053
+    "lon": 127.02053,
+    "addr:housenumber": "1033"
   },
   {
-    "number": "yes",
     "lat": 36.9527194,
-    "lon": 127.0202144
+    "lon": 127.0202144,
+    "addr:housenumber": "1030"
   },
   {
-    "number": "yes",
     "lat": 36.9529959,
-    "lon": 127.0203133
+    "lon": 127.0203133,
+    "addr:housenumber": "1034"
   },
   {
-    "number": "yes",
     "lat": 36.949624,
-    "lon": 127.0171778
+    "lon": 127.0171778,
+    "addr:housenumber": "1138"
   },
   {
-    "number": "yes",
     "lat": 36.9493896,
-    "lon": 127.0173965
+    "lon": 127.0173965,
+    "addr:housenumber": "1130"
   },
   {
-    "number": "yes",
     "lat": 36.9488488,
-    "lon": 127.0174335
+    "lon": 127.0174335,
+    "addr:housenumber": "1132"
   },
   {
-    "number": "yes",
     "lat": 36.9485861,
-    "lon": 127.0174648
+    "lon": 127.0174648,
+    "addr:housenumber": "1133"
   },
   {
-    "number": "yes",
     "lat": 36.9491306,
-    "lon": 127.0174267
+    "lon": 127.0174267,
+    "addr:housenumber": "1131"
   },
   {
-    "number": "yes",
     "lat": 36.9498579,
-    "lon": 127.0184144
+    "lon": 127.0184144,
+    "addr:housenumber": "1127"
   },
   {
-    "number": "yes",
     "lat": 36.9496727,
-    "lon": 127.0179762
+    "lon": 127.0179762,
+    "addr:housenumber": "1137"
   },
   {
-    "number": "yes",
     "lat": 36.949274,
-    "lon": 127.0183654
+    "lon": 127.0183654,
+    "addr:housenumber": "581"
   },
   {
-    "number": "yes",
     "lat": 36.9489475,
-    "lon": 127.0182442
+    "lon": 127.0182442,
+    "addr:housenumber": "583"
   },
   {
-    "number": "yes",
     "lat": 36.9488593,
-    "lon": 127.0186303
+    "lon": 127.0186303,
+    "addr:housenumber": "584"
   },
   {
-    "number": "yes",
     "lat": 36.948913,
-    "lon": 127.0191379
+    "lon": 127.0191379,
+    "addr:housenumber": "582"
   },
   {
-    "number": "yes",
     "lat": 36.9492353,
-    "lon": 127.0188336
+    "lon": 127.0188336,
+    "addr:housenumber": "590"
   },
   {
-    "number": "yes",
     "lat": 36.9482145,
-    "lon": 127.0171921
+    "lon": 127.0171921,
+    "addr:housenumber": "1134"
   },
   {
-    "number": "yes",
     "lat": 36.9492068,
-    "lon": 127.0193309
+    "lon": 127.0193309,
+    "addr:housenumber": "579"
   },
   {
-    "number": "yes",
     "lat": 36.9490563,
-    "lon": 127.0197837
+    "lon": 127.0197837,
+    "addr:housenumber": "579"
   },
   {
-    "number": "yes",
     "lat": 36.9500802,
-    "lon": 127.0207037
+    "lon": 127.0207037,
+    "addr:housenumber": "657"
   },
   {
-    "number": "yes",
     "lat": 36.9503695,
-    "lon": 127.0225028
+    "lon": 127.0225028,
+    "addr:housenumber": "695",
+    "name": "Freedom Chapel"
   },
   {
-    "number": "yes",
     "lat": 36.950881,
-    "lon": 127.0224497
+    "lon": 127.0224497,
+    "addr:housenumber": "696"
   },
   {
-    "number": "yes",
     "lat": 36.9503194,
-    "lon": 127.0234185
+    "lon": 127.0234185,
+    "addr:housenumber": "637"
   },
   {
-    "number": "yes",
     "lat": 36.9506023,
-    "lon": 127.0238538
+    "lon": 127.0238538,
+    "addr:housenumber": "644"
   },
   {
-    "number": "yes",
     "lat": 36.9512507,
-    "lon": 127.0248665
+    "lon": 127.0248665,
+    "addr:housenumber": "1612"
   },
   {
-    "number": "yes",
     "lat": 36.9506868,
-    "lon": 127.0241981
+    "lon": 127.0241981,
+    "addr:housenumber": "1644"
   },
   {
-    "number": "yes",
     "lat": 36.9502999,
-    "lon": 127.0240524
+    "lon": 127.0240524,
+    "addr:housenumber": "616"
   },
   {
-    "number": "yes",
     "lat": 36.9503807,
-    "lon": 127.0247489
+    "lon": 127.0247489,
+    "addr:housenumber": "1646"
   },
   {
-    "number": "yes",
     "lat": 36.9506931,
-    "lon": 127.0246735
+    "lon": 127.0246735,
+    "addr:housenumber": "1645"
   },
   {
-    "number": "yes",
     "lat": 36.9506195,
-    "lon": 127.0251732
+    "lon": 127.0251732,
+    "addr:housenumber": "666"
   },
   {
-    "number": "yes",
     "lat": 36.9506302,
-    "lon": 127.0254357
+    "lon": 127.0254357,
+    "addr:housenumber": "1647"
   },
   {
-    "number": "yes",
     "lat": 36.9507474,
-    "lon": 127.0275961
+    "lon": 127.0275961,
+    "addr:housenumber": "1601"
   },
   {
-    "number": "yes",
     "lat": 36.9508633,
-    "lon": 127.0281329
+    "lon": 127.0281329,
+    "addr:housenumber": "627"
   },
   {
-    "number": "yes",
     "lat": 36.9521371,
-    "lon": 127.0377425
+    "lon": 127.0377425,
+    "addr:housenumber": "1750",
+    "name": "AFN Televideo Center"
   },
   {
-    "number": "warehouse",
     "lat": 36.9512935,
-    "lon": 127.036077
+    "lon": 127.036077,
+    "addr:housenumber": "776"
   },
   {
-    "number": "warehouse",
     "lat": 36.9516011,
-    "lon": 127.0359162
+    "lon": 127.0359162,
+    "addr:housenumber": "775"
   },
   {
-    "number": "yes",
     "lat": 36.9521326,
-    "lon": 127.0292056
+    "lon": 127.0292056,
+    "addr:housenumber": "1078A"
   },
   {
-    "number": "yes",
     "lat": 36.9521751,
-    "lon": 127.0297068
+    "lon": 127.0297068,
+    "addr:housenumber": "1078"
   },
   {
-    "number": "yes",
     "lat": 36.9489654,
-    "lon": 127.0201743
+    "lon": 127.0201743,
+    "addr:housenumber": "557"
   },
   {
-    "number": "yes",
     "lat": 36.9492819,
-    "lon": 127.0208862
+    "lon": 127.0208862,
+    "addr:housenumber": "550"
   },
   {
-    "number": "yes",
     "lat": 36.9490452,
-    "lon": 127.0208295
+    "lon": 127.0208295,
+    "addr:housenumber": "558"
   },
   {
-    "number": "apartments",
     "lat": 36.9483123,
-    "lon": 127.0207001
+    "lon": 127.0207001,
+    "addr:housenumber": "511",
+    "name": "Bunker Hill Tower"
   },
   {
-    "number": "apartments",
     "lat": 36.9468226,
-    "lon": 127.0210179
+    "lon": 127.0210179,
+    "addr:housenumber": "512",
+    "name": "Punch Bowl Tower"
   },
   {
-    "number": "yes",
     "lat": 36.9459194,
-    "lon": 127.0210293
+    "lon": 127.0210293,
+    "addr:housenumber": "514"
   },
   {
-    "number": "yes",
     "lat": 36.9455853,
-    "lon": 127.0206389
+    "lon": 127.0206389,
+    "addr:housenumber": "424"
   },
   {
-    "number": "yes",
     "lat": 36.9486895,
-    "lon": 127.0219303
+    "lon": 127.0219303,
+    "addr:housenumber": "542"
   },
   {
-    "number": "yes",
     "lat": 36.9488116,
-    "lon": 127.0216408
+    "lon": 127.0216408,
+    "addr:housenumber": "577"
   },
   {
-    "number": "yes",
     "lat": 36.9476083,
-    "lon": 127.0213132
+    "lon": 127.0213132,
+    "addr:housenumber": "510",
+    "name": "Heartbreak Ridge Tower"
   },
   {
-    "number": "yes",
     "lat": 36.9492024,
-    "lon": 127.0222758
+    "lon": 127.0222758,
+    "addr:housenumber": "501",
+    "name": "The HUB (Religious Activities Center)"
   },
   {
-    "number": "yes",
     "lat": 36.9484411,
-    "lon": 127.0221539
+    "lon": 127.0221539,
+    "addr:housenumber": "544"
   },
   {
-    "number": "yes",
     "lat": 36.9481654,
-    "lon": 127.0218143
+    "lon": 127.0218143,
+    "addr:housenumber": "575"
   },
   {
-    "number": "yes",
     "lat": 36.9482037,
-    "lon": 127.0223647
+    "lon": 127.0223647,
+    "addr:housenumber": "573"
   },
   {
-    "number": "yes",
     "lat": 36.9483291,
-    "lon": 127.0231627
+    "lon": 127.0231627,
+    "addr:housenumber": "571"
   },
   {
-    "number": "yes",
     "lat": 36.9478518,
-    "lon": 127.0232238
+    "lon": 127.0232238,
+    "addr:housenumber": "572"
   },
   {
-    "number": "yes",
     "lat": 36.9478396,
-    "lon": 127.022386
+    "lon": 127.022386,
+    "addr:housenumber": "574"
   },
   {
-    "number": "yes",
     "lat": 36.9477838,
-    "lon": 127.0218505
+    "lon": 127.0218505,
+    "addr:housenumber": "576"
   },
   {
-    "number": "yes",
     "lat": 36.9471529,
-    "lon": 127.0219899
+    "lon": 127.0219899,
+    "addr:housenumber": "534"
   },
   {
-    "number": "yes",
     "lat": 36.947478,
-    "lon": 127.0220701
+    "lon": 127.0220701,
+    "addr:housenumber": "535"
   },
   {
-    "number": "yes",
     "lat": 36.9472507,
-    "lon": 127.0236198
+    "lon": 127.0236198,
+    "addr:housenumber": "421"
   },
   {
-    "number": "yes",
     "lat": 36.9473747,
-    "lon": 127.0228444
+    "lon": 127.0228444,
+    "addr:housenumber": "570",
+    "name": "Gilliand Youth Center"
   },
   {
-    "number": "yes",
     "lat": 36.9489229,
-    "lon": 127.0231017
+    "lon": 127.0231017,
+    "addr:housenumber": "555",
+    "name": "Jenkins Clinic"
   },
   {
-    "number": "yes",
     "lat": 36.9496662,
-    "lon": 127.0238401
+    "lon": 127.0238401,
+    "addr:housenumber": "360"
   },
   {
-    "number": "yes",
     "lat": 36.9492659,
-    "lon": 127.0239415
+    "lon": 127.0239415,
+    "addr:housenumber": "371"
   },
   {
-    "number": "yes",
     "lat": 36.9488171,
-    "lon": 127.0241058
+    "lon": 127.0241058,
+    "addr:housenumber": "370"
   },
   {
-    "number": "yes",
     "lat": 36.9484944,
-    "lon": 127.0243703
+    "lon": 127.0243703,
+    "addr:housenumber": "362"
   },
   {
-    "number": "yes",
     "lat": 36.9476499,
-    "lon": 127.0252081
+    "lon": 127.0252081,
+    "addr:housenumber": "400",
+    "name": "Sentry Mini Mall"
   },
   {
-    "number": "parking",
     "lat": 36.9498144,
-    "lon": 127.0300882
+    "lon": 127.0300882,
+    "addr:housenumber": "732"
   },
   {
-    "number": "yes",
     "lat": 36.9500562,
-    "lon": 127.0322818
+    "lon": 127.0322818,
+    "addr:housenumber": "725"
   },
   {
-    "number": "yes",
     "lat": 36.9501128,
-    "lon": 127.0312823
+    "lon": 127.0312823,
+    "addr:housenumber": "726"
   },
   {
-    "number": "yes",
     "lat": 36.9497828,
-    "lon": 127.0312672
+    "lon": 127.0312672,
+    "addr:housenumber": "753"
   },
   {
-    "number": "yes",
     "lat": 36.9497722,
-    "lon": 127.0321349
+    "lon": 127.0321349,
+    "addr:housenumber": "754"
   },
   {
-    "number": "yes",
     "lat": 36.9493552,
-    "lon": 127.0314458
+    "lon": 127.0314458,
+    "addr:housenumber": "755"
   },
   {
-    "number": "yes",
     "lat": 36.9506454,
-    "lon": 127.0314256
+    "lon": 127.0314256,
+    "addr:housenumber": "1770"
   },
   {
-    "number": "yes",
     "lat": 36.9490955,
-    "lon": 127.0302091
+    "lon": 127.0302091,
+    "addr:housenumber": "731"
   },
   {
-    "number": "yes",
     "lat": 36.9490448,
-    "lon": 127.0327899
+    "lon": 127.0327899,
+    "addr:housenumber": "737"
   },
   {
-    "number": "yes",
     "lat": 36.9484058,
-    "lon": 127.0305309
+    "lon": 127.0305309,
+    "addr:housenumber": "727",
+    "name": "Morning Calm Post Office"
   },
   {
-    "number": "yes",
     "lat": 36.948344,
-    "lon": 127.0300024
+    "lon": 127.0300024,
+    "addr:housenumber": "370",
+    "name": "Keumkang KATUSA Snack Bar"
   },
   {
-    "number": "yes",
     "lat": 36.9473373,
-    "lon": 127.0313341
+    "lon": 127.0313341,
+    "addr:housenumber": "740"
   },
   {
-    "number": "yes",
     "lat": 36.9473462,
-    "lon": 127.032436
+    "lon": 127.032436,
+    "addr:housenumber": "739"
   },
   {
-    "number": "yes",
     "lat": 36.9473852,
-    "lon": 127.0290302
+    "lon": 127.0290302,
+    "addr:housenumber": "484"
   },
   {
-    "number": "yes",
     "lat": 36.9473785,
-    "lon": 127.0284626
+    "lon": 127.0284626,
+    "addr:housenumber": "481"
   },
   {
-    "number": "yes",
     "lat": 36.9472278,
-    "lon": 127.0279888
+    "lon": 127.0279888,
+    "addr:housenumber": "483"
   },
   {
-    "number": "yes",
     "lat": 36.9474294,
-    "lon": 127.0272811
+    "lon": 127.0272811,
+    "addr:housenumber": "449"
   },
   {
-    "number": "yes",
     "lat": 36.9481688,
-    "lon": 127.0254563
+    "lon": 127.0254563,
+    "addr:housenumber": "112",
+    "name": "Burger King"
   },
   {
-    "number": "yes",
     "lat": 36.9480788,
-    "lon": 127.0261557
+    "lon": 127.0261557,
+    "addr:housenumber": "118"
   },
   {
-    "number": "yes",
     "lat": 36.94834,
-    "lon": 127.0265844
+    "lon": 127.0265844,
+    "addr:housenumber": "111",
+    "name": "ROC Drill Center"
   },
   {
-    "number": "yes",
     "lat": 36.9479878,
-    "lon": 127.0271926
+    "lon": 127.0271926,
+    "addr:housenumber": "110"
   },
   {
-    "number": "yes",
     "lat": 36.9488048,
-    "lon": 127.0264899
+    "lon": 127.0264899,
+    "addr:housenumber": "113"
   },
   {
-    "number": "yes",
     "lat": 36.9492311,
-    "lon": 127.0258108
+    "lon": 127.0258108,
+    "addr:housenumber": "101",
+    "name": "Humphreys Museum"
   },
   {
-    "number": "yes",
     "lat": 36.9483455,
-    "lon": 127.0248177
+    "lon": 127.0248177,
+    "addr:housenumber": "375"
   },
   {
-    "number": "yes",
     "lat": 36.9493556,
-    "lon": 127.0249446
+    "lon": 127.0249446,
+    "addr:housenumber": "302"
   },
   {
-    "number": "yes",
     "lat": 36.9493211,
-    "lon": 127.0251725
+    "lon": 127.0251725,
+    "addr:housenumber": "301",
+    "name": "USO Sentry Village"
   },
   {
-    "number": "yes",
     "lat": 36.9498498,
-    "lon": 127.0269616
+    "lon": 127.0269616,
+    "addr:housenumber": "204"
   },
   {
-    "number": "yes",
     "lat": 36.9492033,
-    "lon": 127.027839
+    "lon": 127.027839,
+    "addr:housenumber": "123"
   },
   {
-    "number": "yes",
     "lat": 36.9487858,
-    "lon": 127.0283488
+    "lon": 127.0283488,
+    "addr:housenumber": "125",
+    "name": "Morning Calm Conference Center"
   },
   {
-    "number": "yes",
     "lat": 36.9611892,
-    "lon": 127.0213216
+    "lon": 127.0213216,
+    "addr:housenumber": "2097",
+    "name": "Talon DFAC"
   },
   {
-    "number": "yes",
     "lat": 36.9629749,
-    "lon": 127.0093273
+    "lon": 127.0093273,
+    "addr:housenumber": "2270",
+    "name": "Family Mini Mall Express"
   },
   {
-    "number": "yes",
     "lat": 36.9666075,
-    "lon": 127.0328372
+    "lon": 127.0328372,
+    "addr:housenumber": "12380",
+    "name": "Hanra KATUSA Snack Bar"
   },
   {
-    "number": "warehouse",
     "lat": 36.9629511,
-    "lon": 126.9917299
+    "lon": 126.9917299,
+    "addr:housenumber": "5545"
   },
   {
-    "number": "warehouse",
     "lat": 36.9646593,
-    "lon": 126.9918522
+    "lon": 126.9918522,
+    "addr:housenumber": "5541"
   },
   {
-    "number": "yes",
     "lat": 36.9683057,
-    "lon": 127.0275951
+    "lon": 127.0275951,
+    "addr:housenumber": "12420"
   },
   {
-    "number": "yes",
     "lat": 36.9656964,
-    "lon": 127.0324952
+    "lon": 127.0324952,
+    "addr:housenumber": "12385"
   },
   {
-    "number": "yes",
     "lat": 36.9632539,
-    "lon": 127.0341048
+    "lon": 127.0341048,
+    "addr:housenumber": "12110"
   },
   {
-    "number": "yes",
     "lat": 36.9651232,
-    "lon": 126.9896794
+    "lon": 126.9896794,
+    "addr:housenumber": "5540"
   },
   {
-    "number": "yes",
     "lat": 36.9617943,
-    "lon": 126.9933748
+    "lon": 126.9933748,
+    "addr:housenumber": "5550"
   },
   {
-    "number": "yes",
     "lat": 36.9622337,
-    "lon": 126.9900877
+    "lon": 126.9900877,
+    "addr:housenumber": "5502",
+    "name": "Visitor Control Center (VCC)"
   },
   {
-    "number": "yes",
     "lat": 36.9681414,
-    "lon": 126.9854247
+    "lon": 126.9854247,
+    "addr:housenumber": "5911"
   },
   {
-    "number": "yes",
     "lat": 36.9681127,
-    "lon": 126.9850941
+    "lon": 126.9850941,
+    "addr:housenumber": "5908"
   },
   {
-    "number": "yes",
     "lat": 36.9717316,
-    "lon": 126.9846803
+    "lon": 126.9846803,
+    "addr:housenumber": "5901"
   },
   {
-    "number": "yes",
     "lat": 36.9713689,
-    "lon": 126.9855284
+    "lon": 126.9855284,
+    "addr:housenumber": "5903"
   },
   {
-    "number": "yes",
     "lat": 36.971477,
-    "lon": 126.9863931
+    "lon": 126.9863931,
+    "addr:housenumber": "5904",
+    "name": "River Bend Golf Club House"
   },
   {
-    "number": "yes",
     "lat": 36.9522687,
-    "lon": 127.0201671
+    "lon": 127.0201671,
+    "addr:housenumber": "1039"
   },
   {
-    "number": "bunker",
     "lat": 36.9509303,
-    "lon": 127.0327928
+    "lon": 127.0327928,
+    "addr:housenumber": "714"
   },
   {
-    "number": "bunker",
     "lat": 36.9502439,
-    "lon": 127.026837
+    "lon": 127.026837,
+    "addr:housenumber": "244"
   },
   {
-    "number": "yes",
     "lat": 36.9503124,
-    "lon": 127.0279089
+    "lon": 127.0279089,
+    "addr:housenumber": "208"
   },
   {
-    "number": "yes",
     "lat": 36.9481207,
-    "lon": 127.0238884
+    "lon": 127.0238884,
+    "addr:housenumber": "365"
   },
   {
-    "number": "yes",
     "lat": 36.9484476,
-    "lon": 127.0238451
+    "lon": 127.0238451,
+    "addr:housenumber": "364"
   },
   {
-    "number": "yes",
     "lat": 36.9481486,
-    "lon": 127.0241647
+    "lon": 127.0241647,
+    "addr:housenumber": "366"
   },
   {
-    "number": "yes",
     "lat": 36.9484754,
-    "lon": 127.0241214
+    "lon": 127.0241214,
+    "addr:housenumber": "363"
   },
   {
-    "number": "yes",
     "lat": 36.9481676,
-    "lon": 127.0244135
+    "lon": 127.0244135,
+    "addr:housenumber": "367"
   },
   {
-    "number": "yes",
     "lat": 36.9496307,
-    "lon": 127.0253104
+    "lon": 127.0253104,
+    "addr:housenumber": "300"
   },
   {
-    "number": "yes",
     "lat": 36.9740548,
-    "lon": 127.013668
+    "lon": 127.013668,
+    "addr:housenumber": "8240"
   },
   {
-    "number": "construction",
     "lat": 36.9824546,
-    "lon": 126.9901459
+    "lon": 126.9901459,
+    "addr:housenumber": "8710"
   },
   {
-    "number": "yes",
     "lat": 36.9472614,
-    "lon": 127.0224539
+    "lon": 127.0224539,
+    "addr:housenumber": "537",
+    "name": "Boy Scouts"
   },
   {
-    "number": "yes",
     "lat": 36.946882,
-    "lon": 127.0225527
+    "lon": 127.0225527,
+    "addr:housenumber": "427",
+    "name": "Girl Scouts"
   },
   {
-    "number": "yes",
     "lat": 36.9626775,
-    "lon": 127.0226113
+    "lon": 127.0226113,
+    "addr:housenumber": "2109"
   },
   {
-    "number": "yes",
     "lat": 36.9593428,
-    "lon": 127.0197774
+    "lon": 127.0197774,
+    "addr:housenumber": "2092"
   },
   {
-    "number": "yes",
     "lat": 36.9595729,
-    "lon": 127.019642
+    "lon": 127.019642,
+    "addr:housenumber": "2091"
   },
   {
-    "number": "yes",
     "lat": 36.9514675,
-    "lon": 127.0240203
+    "lon": 127.0240203,
+    "addr:housenumber": "2040"
   },
   {
-    "number": "apartments",
     "lat": 36.9742696,
-    "lon": 126.992909
+    "lon": 126.992909,
+    "addr:housenumber": "6827"
   },
   {
-    "number": "apartments",
     "lat": 36.9746279,
-    "lon": 126.9919496
+    "lon": 126.9919496,
+    "addr:housenumber": "6824"
   },
   {
-    "number": "apartments",
     "lat": 36.9736431,
-    "lon": 126.9925317
+    "lon": 126.9925317,
+    "addr:housenumber": "6830"
   },
   {
-    "number": "yes",
     "lat": 36.9473873,
-    "lon": 127.0242603
+    "lon": 127.0242603,
+    "addr:housenumber": "400A"
   },
   {
-    "number": "yes",
     "lat": 36.9683088,
-    "lon": 127.0130685
+    "lon": 127.0130685,
+    "addr:housenumber": "6106"
   },
   {
-    "number": "apartments",
     "lat": 36.9677711,
-    "lon": 127.0055048
+    "lon": 127.0055048,
+    "addr:housenumber": "6390"
   },
   {
-    "number": "apartments",
     "lat": 36.9675181,
-    "lon": 127.0074865
+    "lon": 127.0074865,
+    "addr:housenumber": "6392"
   },
   {
-    "number": "apartments",
     "lat": 36.9678683,
-    "lon": 127.0064219
+    "lon": 127.0064219,
+    "addr:housenumber": "6391"
   },
   {
-    "number": "yes",
     "lat": 36.9653803,
-    "lon": 127.0102666
+    "lon": 127.0102666,
+    "addr:housenumber": "6070"
   },
   {
-    "number": "yes",
     "lat": 36.9662743,
-    "lon": 127.0107212
+    "lon": 127.0107212,
+    "addr:housenumber": "6060"
   },
   {
-    "number": "yes",
     "lat": 36.9663458,
-    "lon": 127.0117969
+    "lon": 127.0117969,
+    "addr:housenumber": "6050"
   },
   {
-    "number": "yes",
     "lat": 36.9575052,
-    "lon": 127.0426664
+    "lon": 127.0426664,
+    "addr:housenumber": "1432",
+    "name": "Pancake House"
   },
   {
-    "number": "yes",
     "lat": 36.96458,
-    "lon": 127.0378404
+    "lon": 127.0378404,
+    "addr:housenumber": "1330"
   }
 ]

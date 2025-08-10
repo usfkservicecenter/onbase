@@ -39,7 +39,14 @@
     const gateBounds = L.latLngBounds([[minLat, minLon],[maxLat, maxLon]]);
 
     // ===== 지도 (라이트 타일) =====
-    const map = L.map('map', { zoomControl: true });
+    const map = L.map('map', {
+      zoomControl: true,
+      scrollWheelZoom: true,   // 휠/트랙패드 줌 허용
+      touchZoom: true,         // 터치 핀치줌 허용
+      dragging: true,          // 드래그 허용
+      doubleClickZoom: true
+    });
+
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap & CARTO',
       subdomains: 'abcd',
@@ -48,7 +55,7 @@
 
     map.setMaxBounds(gateBounds);
     map.fitBounds(gateBounds);
-    map.on('drag', () => map.panInsideBounds(gateBounds, { animate: true }));
+    // ★ panInsideBounds 강제 호출 제거 (스크롤 문제 원인 가능성)
 
     // (옵션) 게이트 점표시
     gates.forEach(g => {
@@ -69,28 +76,28 @@
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ===== 좌표 로드 (건물번호 우선 표시) =====
+    // ===== 좌표 로드: addr:housenumber 우선 표시 =====
     fetch('./buildings.json')
       .then(res => res.json())
       .then(buildings => {
         buildings.forEach(b => {
-          // 표기 텍스트: number → addr:housenumber → name 순 폴백
-          const labelText =
-            (b.number && String(b.number).trim()) ||
-            (b['addr:housenumber'] && String(b['addr:housenumber']).trim()) ||
-            (b.name && String(b.name).trim()) ||
-            '';
+          const lat = b.lat ?? b.y;
+          const lon = b.lon ?? b.x;
+          if (lat == null || lon == null) return;
 
-          // 좌표 키: lat/lon 또는 y/x 폴백 허용
-          const lat = (b.lat ?? b.y);
-          const lon = (b.lon ?? b.x);
-          if (lat == null || lon == null || !labelText) return;
+          // 라벨 텍스트: addr:housenumber 우선, 없으면 name
+          const labelText =
+            (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
+            (b.name && String(b.name).trim()) ||
+            "";
+
+          if (!labelText) return;
 
           const marker = L.marker([lat, lon], {
             icon: L.divIcon({
               className: 'building-label',
               html: labelText,
-              iconSize: [26, 12],  // 10px 글씨에 맞춰 살짝 축소
+              iconSize: [26, 12],
               iconAnchor: [13, 6]
             })
           });
@@ -99,6 +106,13 @@
         updateBuildingLabels(); // 초기 적용
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
+
+    // 보조: 모바일 환경에서 브라우저가 자동 비활성화했을 경우 강제 enable
+    map.whenReady(() => {
+      if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
+      if (!map.options.touchZoom) map.touchZoom.enable();
+      if (!map.options.dragging) map.dragging.enable();
+    });
   </script>
 </body>
 </html>
