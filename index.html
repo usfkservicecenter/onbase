@@ -10,8 +10,8 @@
     html, body { height: 100%; margin: 0; }
     #map { height: 100%; }
     .building-label {
-      color: #6b7280;       /* 라이트 맵에서 잘 보이는 회색 */
-      font-size: 10px;      /* 요청: 10px */
+      color: #6b7280;
+      font-size: 10px;
       font-weight: 700;
       text-shadow: 1px 1px 2px #fff;
       white-space: nowrap;
@@ -28,21 +28,23 @@
     const gates = [
       { name: "Millet Gate (도두리)",  lat: 36.95819961, lon: 127.04428911 },
       { name: "Yoon Gate (윤)",        lat: 36.96894099, lon: 127.03556648 },
-      // 남쪽 범위 확보 위해 Charlton Gate 좌표 적용
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
 
-    // ===== bounds 계산 (남쪽만 여유를 더 줌) =====
-    const padN = 0.003;   // 북
-    const padS = 0.010;   // 남 (Charlton까지 충분히 내려가게)
-    const padW = 0.003;   // 서
-    const padE = 0.003;   // 동
+    // ===== 서쪽 확장: 5901번 건물까지 포함 =====
+    const westMostLon = 126.9846803; // Driving Range
+    const lats = gates.map(g => g.lat);
+    const lons = gates.map(g => g.lon);
 
-    const lats = gates.map(g => g.lat), lons = gates.map(g => g.lon);
     const minLatRaw = Math.min(...lats);
     const maxLatRaw = Math.max(...lats);
-    const minLonRaw = Math.min(...lons);
+    const minLonRaw = Math.min(westMostLon, ...lons); // 서쪽 범위에 포함
     const maxLonRaw = Math.max(...lons);
+
+    const padN = 0.003;   // 북쪽
+    const padS = 0.010;   // 남쪽 (Charlton까지)
+    const padW = 0.003;   // 서쪽 패딩
+    const padE = 0.003;   // 동쪽
 
     const gateBounds = L.latLngBounds(
       [minLatRaw - padS, minLonRaw - padW],
@@ -67,14 +69,13 @@
     map.setMaxBounds(gateBounds);
     map.fitBounds(gateBounds);
 
-    // (옵션) 게이트 위치 표시
     gates.forEach(g => {
       L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name);
     });
 
     // ===== 라벨 표시 제어 =====
     const buildingMarkers = [];
-    const LABEL_ZOOM = 15; // 요청: 15부터 표시
+    const LABEL_ZOOM = 15;
 
     function updateBuildingLabels() {
       const zoom = map.getZoom();
@@ -86,7 +87,7 @@
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ===== 좌표 로드: addr:housenumber 우선 표시 =====
+    // ===== addr:housenumber 우선 표시 =====
     fetch('./buildings.json')
       .then(res => res.json())
       .then(buildings => {
@@ -112,11 +113,10 @@
           });
           buildingMarkers.push(marker);
         });
-        updateBuildingLabels(); // 초기 적용
+        updateBuildingLabels();
       })
       .catch(err => console.error('건물 좌표 로드 실패:', err));
 
-    // 사파리 등에서 자동 비활성화됐을 경우 대비
     map.whenReady(() => {
       if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
       if (!map.options.touchZoom) map.touchZoom.enable();
