@@ -2,77 +2,95 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>OnBase USAG Humphreys 건물 지도</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin />
   <style>
     html, body { height: 100%; margin: 0; }
     #map { height: 100%; }
-    .building-label {
-      color: #6b7280; font-size: 10px; font-weight: 700;
-      text-shadow: 1px 1px 2px #fff; white-space: nowrap; pointer-events: none;
-    }
-    /* locate 버튼 */
+    .building-label { color:#6b7280; font-size:10px; font-weight:700; text-shadow:1px 1px 2px #fff; white-space:nowrap; pointer-events:none; }
+
+    /* Locate 버튼 */
     .leaflet-control-locate { background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
-    .leaflet-control-locate button{
-      width:36px; height:36px; display:grid; place-items:center;
-      border:none; background:transparent; cursor:pointer; color:#111827; /* text-gray-900 */
-    }
-    .leaflet-control-locate button:hover{ background:#f3f4f6; } /* gray-100 */
+    .leaflet-control-locate button{ width:36px; height:36px; display:grid; place-items:center; border:none; background:transparent; cursor:pointer; color:#111827; }
+    .leaflet-control-locate button:hover{ background:#f3f4f6; }
     .leaflet-control-locate svg{ width:18px; height:18px; stroke:currentColor; fill:none; }
-    .locating .leaflet-control-locate button{ color:#2563eb; } /* locating 중 파랑 (blue-600) */
+    .locating .leaflet-control-locate button{ color:#2563eb; }
+
+    /* iOS 느낌 모달 */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      display: none; align-items: center; justify-content: center; z-index: 10000;
+      -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+    }
+    .modal {
+      width: min(90vw, 360px);
+      background: #f8f8f8; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    }
+    .modal-header { padding: 14px 16px 6px; text-align: center; font-weight: 600; color:#111827; }
+    .modal-body   { padding: 0 16px 12px; text-align: center; color:#4b5563; font-size: 14px; }
+    .modal-actions { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #e5e7eb; }
+    .modal-btn {
+      padding: 12px 8px; background: #fff; border: none; font-weight: 600; color:#2563eb;
+      -webkit-tap-highlight-color: transparent; font-size: 16px;
+    }
+    .modal-btn + .modal-btn { border-left: 1px solid #e5e7eb; }
+    .modal[hidden] + .modal-actions { display:none; }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
+  <!-- 위치 실패 모달 -->
+  <div id="locateModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="locateTitle" aria-describedby="locateDesc">
+    <div class="modal">
+      <div class="modal-header" id="locateTitle">위치를 찾을 수 없음.</div>
+      <div class="modal-body" id="locateDesc">
+        위치 권한이 거부되었거나 GPS 신호가 약할 수 있어요.<br />
+        다시 시도하시겠어요?
+      </div>
+      <div class="modal-actions">
+        <button id="locateRetry"  class="modal-btn">다시 시도</button>
+        <button id="locateClose"  class="modal-btn" style="color:#111827">확인</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
   <script>
-    // ===== 게이트 좌표 =====
+    // ===== 게이트 & 확장 포인트 =====
     const gates = [
       { name: "Millet Gate (도두리)",  lat: 36.95819961, lon: 127.04428911 },
       { name: "Yoon Gate (윤)",        lat: 36.96894099, lon: 127.03556648 },
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
-
-    // ===== 서/북 확장 포인트 =====
-    const westMostLon  = 126.9846803;   // 5901 (Driving Range)
+    const westMostLon  = 126.9846803;   // 5901
     const northMostLat = 36.9824546;    // 8710
 
-    // ===== bounds 계산 =====
-    const lats = gates.map(g => g.lat);
-    const lons = gates.map(g => g.lon);
+    // ===== bounds =====
+    const lats = gates.map(g => g.lat), lons = gates.map(g => g.lon);
     const minLatRaw = Math.min(...lats);
     const maxLatRaw = Math.max(northMostLat, ...lats);
     const minLonRaw = Math.min(westMostLon, ...lons);
     const maxLonRaw = Math.max(...lons);
 
     const padN = 0.004, padS = 0.010, padW = 0.003, padE = 0.003;
-    const gateBounds = L.latLngBounds(
-      [minLatRaw - padS, minLonRaw - padW],
-      [maxLatRaw + padN, maxLonRaw + padE]
-    );
-    const liveBounds = gateBounds.pad(0.15); // 살짝 여유
+    const gateBounds = L.latLngBounds([ [minLatRaw - padS, minLonRaw - padW], [maxLatRaw + padN, maxLonRaw + padE] ]);
+    const liveBounds = gateBounds.pad(0.15);
 
     // ===== 지도 =====
     const map = L.map('map', {
-      zoomControl: true,
-      scrollWheelZoom: true,
-      touchZoom: true,
-      dragging: true,
-      doubleClickZoom: true,
-      maxBounds: liveBounds,
-      maxBoundsViscosity: 0.95
+      zoomControl: true, scrollWheelZoom: true, touchZoom: true, dragging: true, doubleClickZoom: true,
+      maxBounds: liveBounds, maxBoundsViscosity: 0.95
     });
-
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap & CARTO',
-      subdomains: 'abcd',
-      maxZoom: 19
+      attribution: '&copy; OpenStreetMap & CARTO', subdomains: 'abcd', maxZoom: 19
     }).addTo(map);
 
-    // (옵션) 게이트 표시
+    // 게이트 표시
     gates.forEach(g => L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name));
 
     // ===== 라벨 표시 제어 =====
@@ -88,112 +106,107 @@
     }
     map.on('zoomend', updateBuildingLabels);
 
-    // ===== 좌표 로드: addr:housenumber 우선 =====
-    fetch('./buildings.json')
-      .then(res => res.json())
-      .then(buildings => {
-        buildings.forEach(b => {
-          const lat = b.lat ?? b.y, lon = b.lon ?? b.x;
-          if (lat == null || lon == null) return;
-          const labelText =
-            (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
-            (b.name && String(b.name).trim()) || "";
-          if (!labelText) return;
-          const marker = L.marker([lat, lon], {
-            icon: L.divIcon({ className: 'building-label', html: labelText, iconSize: [26,12], iconAnchor: [13,6] })
-          });
-          buildingMarkers.push(marker);
-        });
-        updateBuildingLabels();
-      })
-      .catch(err => console.error('건물 좌표 로드 실패:', err));
+    fetch('./buildings.json').then(r=>r.json()).then(buildings=>{
+      buildings.forEach(b=>{
+        const lat=b.lat ?? b.y, lon=b.lon ?? b.x; if(lat==null||lon==null) return;
+        const label=(b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) || (b.name && String(b.name).trim()) || "";
+        if(!label) return;
+        const m=L.marker([lat,lon],{icon:L.divIcon({className:'building-label',html:label,iconSize:[26,12],iconAnchor:[13,6]})});
+        buildingMarkers.push(m);
+      });
+      updateBuildingLabels();
+    });
 
-    // ===== 유틸: 경계 내부로 클램프 =====
-    function clampToBounds(latlng, bounds) {
-      const n = bounds.getNorth(), s = bounds.getSouth();
-      const e = bounds.getEast(),  w = bounds.getWest();
-      const clampedLat = Math.min(Math.max(latlng.lat, s), n);
-      const clampedLng = Math.min(Math.max(latlng.lng, w), e);
-      return L.latLng(clampedLat, clampedLng);
+    // ===== 유틸 =====
+    function clampToBounds(latlng, bounds){
+      const n=bounds.getNorth(), s=bounds.getSouth(), e=bounds.getEast(), w=bounds.getWest();
+      return L.latLng(Math.min(Math.max(latlng.lat,s),n), Math.min(Math.max(latlng.lng,w),e));
     }
 
-    // ===== 내 위치: 첫 로딩 요청 =====
+    // ===== 위치 로직 =====
     const userLayer = L.layerGroup().addTo(map);
-    let located = false, fallbackTimer = null;
+    let located=false, fallbackTimer=null;
 
-    function centerOn(latlng, accuracy) {
-      const target = clampToBounds(latlng, liveBounds);
-      map.setView(target, 17, { animate: true });
-      setTimeout(() => map.invalidateSize(), 50);
+    function centerOn(latlng, accuracy){
+      const target=clampToBounds(latlng, liveBounds);
+      map.setView(target, 17, { animate:true });
+      setTimeout(()=>map.invalidateSize(), 50);
       userLayer.clearLayers();
-      L.circleMarker(latlng, { radius: 6 }).addTo(userLayer);
-      if (accuracy) L.circle(latlng, { radius: accuracy }).addTo(userLayer);
+      L.circleMarker(latlng,{radius:6}).addTo(userLayer);
+      if(accuracy) L.circle(latlng,{radius:accuracy}).addTo(userLayer);
     }
 
-    function startLocate() {
+    function startLocate(){
       document.body.classList.add('locating');
-      map.locate({ setView: false, maxZoom: 18, enableHighAccuracy: true, watch: true });
+      map.locate({ setView:false, maxZoom:18, enableHighAccuracy:true, watch:true });
       // 8초 폴백
-      fallbackTimer = setTimeout(() => {
-        if (!located) {
-          map.fitBounds(gateBounds);
-          map.stopLocate();
-          document.body.classList.remove('locating');
-          setTimeout(() => map.invalidateSize(), 50);
-        }
-      }, 8000);
+      fallbackTimer=setTimeout(()=>{
+        if(!located){ showLocateError(); map.stopLocate(); }
+      },8000);
     }
 
-    map.whenReady(() => { startLocate(); });
+    // 첫 로딩에서 시도
+    map.whenReady(()=>{ startLocate(); });
 
-    map.on('locationfound', (e) => {
-      located = true;
-      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
+    map.on('locationfound',(e)=>{
+      located=true;
+      if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; }
       map.stopLocate();
       document.body.classList.remove('locating');
       centerOn(e.latlng, e.accuracy);
     });
 
-    map.on('locationerror', () => {
-      located = false;
-      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
-      map.fitBounds(gateBounds);
-      document.body.classList.remove('locating');
-      setTimeout(() => map.invalidateSize(), 50);
+    map.on('locationerror',()=>{
+      located=false;
+      if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; }
+      showLocateError();
     });
 
-    // ===== 내 위치 버튼 (네비게이션 삼각형 아이콘) =====
-    const LocateControl = L.Control.extend({
-      onAdd: function () {
-        const container = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
-        const btn = L.DomUtil.create('button', '', container);
-        btn.title = '내 위치 찾기';
-        btn.setAttribute('aria-label', '내 위치 찾기');
-        btn.innerHTML = `
-          <!-- Navigation (paper-plane) icon -->
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M21.5 3.5L10 14l-1 6 4-3 8.5-13.5z" stroke-width="2" stroke-linejoin="round"></path>
-            <path d="M21.5 3.5L3 11l7 3 11.5-10.5z" stroke-width="2" stroke-linejoin="round"></path>
-          </svg>
-        `;
-        L.DomEvent.disableClickPropagation(container);
-        L.DomEvent.on(btn, 'click', (e) => {
-          e.preventDefault();
-          located = false;
-          if (fallbackTimer) { clearTimeout(fallbackTimer); }
-          startLocate();
-        });
-        return container;
-      },
-      onRemove: function () {}
+    // ===== iOS 스타일 모달 제어 =====
+    const modal = document.getElementById('locateModal');
+    const btnRetry = document.getElementById('locateRetry');
+    const btnClose = document.getElementById('locateClose');
+
+    function showLocateError(){
+      modal.style.display='flex';
+      // 안내: 권한이 영구 거부된 경우 사용자에게 설정 안내(텍스트로)
+      document.body.classList.remove('locating');
+      map.fitBounds(gateBounds);
+      setTimeout(()=>map.invalidateSize(), 50);
+    }
+    function hideLocateError(){ modal.style.display='none'; }
+
+    btnRetry.addEventListener('click', (e)=>{
+      e.preventDefault();
+      hideLocateError();
+      located=false;
+      if(fallbackTimer){ clearTimeout(fallbackTimer); }
+      startLocate();
     });
-    map.addControl(new LocateControl({ position: 'topleft' }));
+    btnClose.addEventListener('click', (e)=>{
+      e.preventDefault();
+      hideLocateError();
+    });
+
+    // ===== 내 위치 버튼 (네비게이션 아이콘) =====
+    const LocateControl=L.Control.extend({
+      onAdd:function(){
+        const c=L.DomUtil.create('div','leaflet-control-locate leaflet-bar');
+        const b=L.DomUtil.create('button','',c);
+        b.title='내 위치 찾기'; b.setAttribute('aria-label','내 위치 찾기');
+        b.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 3.5L10 14l-1 6 4-3 8.5-13.5z" stroke-width="2" stroke-linejoin="round"></path><path d="M21.5 3.5L3 11l7 3 11.5-10.5z" stroke-width="2" stroke-linejoin="round"></path></svg>`;
+        L.DomEvent.disableClickPropagation(c);
+        L.DomEvent.on(b,'click',(e)=>{ e.preventDefault(); hideLocateError(); located=false; if(fallbackTimer){clearTimeout(fallbackTimer);} startLocate(); });
+        return c;
+      }, onRemove:function(){}
+    });
+    map.addControl(new LocateControl({ position:'topleft' }));
 
     // 제스처 비활성화 대비
-    map.whenReady(() => {
-      if (!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
-      if (!map.options.touchZoom) map.touchZoom.enable();
-      if (!map.options.dragging) map.dragging.enable();
+    map.whenReady(()=>{
+      if(!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
+      if(!map.options.touchZoom) map.touchZoom.enable();
+      if(!map.options.dragging) map.dragging.enable();
     });
   </script>
 </body>
