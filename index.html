@@ -6,36 +6,88 @@
   <title>OnBase USAG Humphreys 건물 지도</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin />
-  <style>
-    html, body { height: 100%; margin: 0; }
-    #map { height: 100%; }
-    .building-label { color:#6b7280; font-size:10px; font-weight:700; text-shadow:1px 1px 2px #fff; white-space:nowrap; pointer-events:none; }
 
-    /* Leaflet custom controls */
-    .leaflet-control-locate,
-    .leaflet-control-alerttest { background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
-    .leaflet-control-locate button,
-    .leaflet-control-alerttest button {
-      width:36px; height:36px; display:grid; place-items:center;
-      border:none; background:transparent; cursor:pointer; color:#111827;
+  <style>
+    /* ===== iOS 안전영역 + 동적뷰포트 ===== */
+    :root { --app-h: 100vh; }
+    @supports (height: 100dvh) { :root { --app-h: 100dvh; } }
+    html, body { height: 100%; margin: 0; }
+    body { overflow: hidden; background: #fff; }
+
+    /* ===== 앱 레이아웃 ===== */
+    .app { height: var(--app-h); display: flex; flex-direction: column; background: #fff; }
+    .app-header {
+      padding-top: env(safe-area-inset-top);
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fff;
     }
-    .leaflet-control-locate button:hover,
-    .leaflet-control-alerttest button:hover { background:#f3f4f6; }
-    .leaflet-control-locate svg { width:18px; height:18px; stroke:currentColor; fill:none; }
+    #map { flex: 1; min-height: 0; }
+
+    /* ===== 라벨 ===== */
+    .building-label {
+      color:#6b7280; font-size:10px; font-weight:700;
+      text-shadow:1px 1px 2px #fff; white-space:nowrap; pointer-events:none;
+    }
+
+    /* ===== 커스텀 컨트롤 버튼 ===== */
+    .leaflet-control-locate,.leaflet-control-alerttest{ background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+    .leaflet-control-locate button,.leaflet-control-alerttest button{
+      width:36px; height:36px; display:grid; place-items:center; border:none; background:transparent; cursor:pointer; color:#111827;
+    }
+    .leaflet-control-locate button:hover,.leaflet-control-alerttest button:hover{ background:#f3f4f6; }
+    .leaflet-control-locate svg{ width:18px; height:18px; stroke:currentColor; fill:none; }
     .locating .leaflet-control-locate button{ color:#2563eb; }
 
-    /* iOS 스타일 모달 */
-    .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; z-index:10000; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);}
-    .modal { width:min(90vw,360px); background:#f8f8f8; border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.25); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; }
-    .modal-header{ padding:14px 16px 6px; text-align:center; font-weight:600; color:#111827;}
-    .modal-body{ padding:0 16px 12px; text-align:center; color:#4b5563; font-size:14px;}
-    .modal-actions{ display:grid; grid-template-columns:1fr 1fr; border-top:1px solid #e5e7eb;}
-    .modal-btn{ padding:12px 8px; background:#fff; border:none; font-weight:600; color:#2563eb; -webkit-tap-highlight-color:transparent; font-size:16px;}
-    .modal-btn + .modal-btn{ border-left:1px solid #e5e7eb;}
+    /* ===== iOS 스타일 모달 ===== */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.4); display:none; align-items:center; justify-content:center; z-index:10000; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px);
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+    .modal{ width:min(90vw,360px); background:#f8f8f8; border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.25);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;}
+    .modal-header{ padding:14px 16px 6px; text-align:center; font-weight:600; color:#111827; }
+    .modal-body{ padding:0 16px 12px; text-align:center; color:#4b5563; font-size:14px; }
+    .modal-actions{ display:grid; grid-template-columns:1fr 1fr; border-top:1px solid #e5e7eb; }
+    .modal-btn{ padding:12px 8px; background:#fff; border:none; font-weight:600; color:#2563eb; -webkit-tap-highlight-color:transparent; font-size:16px; }
+    .modal-btn + .modal-btn{ border-left:1px solid #e5e7eb; }
   </style>
 </head>
 <body>
-  <div id="map"></div>
+  <div class="app">
+    <!-- 상단 헤더: 제목 + 검색/필터 -->
+    <header class="app-header">
+      <div class="flex flex-col gap-2">
+        <h1 class="text-base font-semibold text-gray-900">OnBase USAG Humphreys 건물 지도</h1>
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- 검색 인풋 -->
+          <div class="flex items-center gap-2">
+            <input id="searchInput" type="search" inputmode="search" placeholder="건물번호 또는 이름 검색"
+                   class="w-64 max-w-[70vw] rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                   autocomplete="off" />
+            <button id="clearBtn" class="rounded-md border border-gray-300 px-2.5 py-2 text-sm text-gray-700 hover:bg-gray-100">초기화</button>
+          </div>
+          <!-- 매치 방식 -->
+          <label class="text-sm text-gray-600">매치:
+            <select id="matchMode" class="ml-1 rounded-md border border-gray-300 px-2 py-2 text-sm">
+              <option value="contains">포함</option>
+              <option value="starts">시작</option>
+              <option value="equals">정확히</option>
+            </select>
+          </label>
+          <!-- 자동줌 -->
+          <label class="flex items-center gap-1 text-sm text-gray-600">
+            <input id="autoZoom" type="checkbox" class="h-4 w-4"> 자동줌
+          </label>
+          <!-- 결과 요약 -->
+          <span id="resultCount" class="text-sm text-gray-500"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 지도 -->
+    <div id="map"></div>
+  </div>
 
   <!-- 위치 실패 모달 -->
   <div id="locateModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="locateTitle" aria-describedby="locateDesc">
@@ -53,161 +105,229 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin></script>
   <script>
-    // ===== 게이트 & 확장 포인트 =====
+    /* ====== 경계/게이트 설정 ====== */
     const gates = [
       { name: "Millet Gate (도두리)",  lat: 36.95819961, lon: 127.04428911 },
       { name: "Yoon Gate (윤)",        lat: 36.96894099, lon: 127.03556648 },
       { name: "Charlton Gate (함정리)", lat: 36.95159,    lon: 127.0198 }
     ];
-    const westMostLon  = 126.9846803; // 5901
+    const westMostLon  = 126.9846803; // 5901 Driving Range
     const northMostLat = 36.9824546;  // 8710
 
-    // ===== bounds =====
     const lats = gates.map(g => g.lat), lons = gates.map(g => g.lon);
     const minLatRaw = Math.min(...lats);
     const maxLatRaw = Math.max(northMostLat, ...lats);
     const minLonRaw = Math.min(westMostLon, ...lons);
     const maxLonRaw = Math.max(...lons);
+    const padN = 0.004, padS = 0.010, padW = 0.003, padE = 0.003;
 
-    const padN=0.004, padS=0.010, padW=0.003, padE=0.003;
-    const gateBounds = L.latLngBounds([[minLatRaw - padS, minLonRaw - padW],[maxLatRaw + padN, maxLonRaw + padE]]);
-    const liveBounds = gateBounds.pad(0.15);
+    const gateBounds = L.latLngBounds(
+      [minLatRaw - padS, minLonRaw - padW],
+      [maxLatRaw + padN, maxLonRaw + padE]
+    );
+    const liveBounds = gateBounds.pad(0.15); // 경계 여유
 
-    // ===== 지도 =====
+    /* ====== 지도 ====== */
     const map = L.map('map', {
-      zoomControl:true, scrollWheelZoom:true, touchZoom:true, dragging:true, doubleClickZoom:true,
-      maxBounds: liveBounds, maxBoundsViscosity:0.95
+      zoomControl: true,
+      scrollWheelZoom: true,
+      touchZoom: true,
+      dragging: true,
+      doubleClickZoom: true,
+      maxBounds: liveBounds,
+      maxBoundsViscosity: 0.95
     });
+    window.map = map;
+
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution:'&copy; OpenStreetMap & CARTO', subdomains:'abcd', maxZoom:19
+      attribution: '&copy; OpenStreetMap & CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
     }).addTo(map);
 
     // 게이트 표시
-    gates.forEach(g => L.circleMarker([g.lat,g.lon],{radius:4}).addTo(map).bindTooltip(g.name));
+    gates.forEach(g => L.circleMarker([g.lat, g.lon], { radius: 4 }).addTo(map).bindTooltip(g.name));
 
-    // ===== 라벨 표시 =====
-    const buildingMarkers=[]; const LABEL_ZOOM=15;
-    function updateBuildingLabels(){
-      const z=map.getZoom();
-      buildingMarkers.forEach(m=>{
-        const on=map.hasLayer(m);
-        if(z>=LABEL_ZOOM && !on) m.addTo(map);
-        if(z<LABEL_ZOOM && on) map.removeLayer(m);
+    /* ===== 라벨/검색 ===== */
+    const buildingMarkers = [];
+    let dataset = []; // {lat, lon, label, marker, visibleByFilter}
+    const LABEL_ZOOM = 15;
+
+    function normalize(s){ return (s ?? '').toString().trim(); }
+    function matchLabel(label, q, mode){
+      if (!q) return true;
+      const L = label.toLowerCase(); const Q = q.toLowerCase();
+      if (mode === 'starts') return L.startsWith(Q);
+      if (mode === 'equals') return L === Q;
+      return L.includes(Q); // contains
+    }
+
+    function applyFilters(){
+      const q = normalize(document.getElementById('searchInput').value);
+      const mode = document.getElementById('matchMode').value;
+      let count=0;
+      dataset.forEach(it=>{
+        const ok = matchLabel(it.label, q, mode);
+        it.visibleByFilter = ok;
+        if (ok) count++;
+      });
+      document.getElementById('resultCount').textContent =
+        q ? `결과: ${count}개` : '';
+      updateBuildingLabels(); // 필터 반영하여 표시 업데이트
+      return count;
+    }
+
+    function updateBuildingLabels() {
+      const z = map.getZoom();
+      dataset.forEach(it=>{
+        const shouldShow = (z >= LABEL_ZOOM) && it.visibleByFilter;
+        const on = map.hasLayer(it.marker);
+        if (shouldShow && !on) it.marker.addTo(map);
+        if (!shouldShow && on) map.removeLayer(it.marker);
       });
     }
-    map.on('zoomend',updateBuildingLabels);
+    map.on('zoomend', updateBuildingLabels);
 
-    fetch('./buildings.json').then(r=>r.json()).then(buildings=>{
-      buildings.forEach(b=>{
-        const lat=b.lat??b.y, lon=b.lon??b.x; if(lat==null||lon==null) return;
-        const label=(b["addr:housenumber"]&&String(b["addr:housenumber"]).trim())||(b.name&&String(b.name).trim())||"";
-        if(!label) return;
-        buildingMarkers.push(L.marker([lat,lon],{icon:L.divIcon({className:'building-label',html:label,iconSize:[26,12],iconAnchor:[13,6]})}));
+    fetch('./buildings.json').then(r => r.json()).then(buildings => {
+      buildings.forEach(b => {
+        const lat = b.lat ?? b.y, lon = b.lon ?? b.x; if (lat == null || lon == null) return;
+        const label =
+          (b["addr:housenumber"] && String(b["addr:housenumber"]).trim()) ||
+          (b.name && String(b.name).trim()) || "";
+        if (!label) return;
+
+        const marker = L.marker([lat, lon], {
+          icon: L.divIcon({ className: 'building-label', html: label, iconSize: [26, 12], iconAnchor: [13, 6] })
+        });
+        dataset.push({ lat, lon, label, marker, visibleByFilter: true });
       });
-      updateBuildingLabels();
+      applyFilters(); // 초기 적용
     });
 
-    // ===== 유틸 =====
-    function clampToBounds(latlng,bounds){
-      const n=bounds.getNorth(), s=bounds.getSouth(), e=bounds.getEast(), w=bounds.getWest();
-      return L.latLng(Math.min(Math.max(latlng.lat,s),n), Math.min(Math.max(latlng.lng,w),e));
+    /* ====== 검색 UI 동작 ====== */
+    // 입력 디바운스
+    function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+    const onQueryChange = debounce(()=>{
+      const n = applyFilters();
+      if (n > 0 && document.getElementById('autoZoom').checked){
+        const first = dataset.find(it => it.visibleByFilter);
+        if (first){
+          map.flyTo([first.lat, first.lon], Math.max(map.getZoom(), 17), { duration: 0.8 });
+        }
+      }
+    }, 200);
+
+    document.getElementById('searchInput').addEventListener('input', onQueryChange);
+    document.getElementById('matchMode').addEventListener('change', onQueryChange);
+    document.getElementById('autoZoom').addEventListener('change', onQueryChange);
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      document.getElementById('searchInput').value = '';
+      applyFilters();
+    });
+
+    /* ===== 유틸: 경계 내부로 클램프 ===== */
+    function clampToBounds(latlng, bounds) {
+      const n = bounds.getNorth(), s = bounds.getSouth();
+      const e = bounds.getEast(),  w = bounds.getWest();
+      return L.latLng(Math.min(Math.max(latlng.lat, s), n), Math.min(Math.max(latlng.lng, w), e));
     }
 
-    // ===== 위치 로직 =====
-    const userLayer=L.layerGroup().addTo(map);
-    let located=false, fallbackTimer=null;
+    /* ===== 위치 로직 (첫 진입: 위치 우선) ===== */
+    const userLayer = L.layerGroup().addTo(map);
+    let located = false, fallbackTimer = null;
 
-    function centerOn(latlng,accuracy){
-      const target=clampToBounds(latlng, liveBounds);
-      map.setView(target,17,{animate:true});
-      setTimeout(()=>map.invalidateSize(),50);
+    function centerOn(latlng, accuracy) {
+      const target = clampToBounds(latlng, liveBounds);
+      map.setView(target, 17, { animate: true });
+      setTimeout(() => map.invalidateSize(), 50);
       userLayer.clearLayers();
-      L.circleMarker(latlng,{radius:6}).addTo(userLayer);
-      if(accuracy) L.circle(latlng,{radius:accuracy}).addTo(userLayer);
+      L.circleMarker(latlng, { radius: 6 }).addTo(userLayer);
+      if (accuracy) L.circle(latlng, { radius: accuracy }).addTo(userLayer);
     }
 
-    function startLocate(){
+    function startLocate() {
       document.body.classList.add('locating');
-      map.locate({ setView:false, maxZoom:18, enableHighAccuracy:true, watch:true });
+      map.locate({ setView: false, maxZoom: 18, enableHighAccuracy: true, watch: true });
       // 8초 폴백
-      fallbackTimer=setTimeout(()=>{
-        if(!located){ showLocateError(); map.stopLocate(); }
-      },8000);
+      fallbackTimer = setTimeout(() => {
+        if (!located) { showLocateError(); map.stopLocate(); }
+      }, 8000);
     }
 
-    map.whenReady(()=>{ startLocate(); });
+    map.whenReady(() => { startLocate(); });
 
-    map.on('locationfound',(e)=>{
-      located=true;
-      if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; }
+    map.on('locationfound', (e) => {
+      located = true;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       map.stopLocate();
       document.body.classList.remove('locating');
-      centerOn(e.latlng,e.accuracy);
+      centerOn(e.latlng, e.accuracy);
     });
 
-    map.on('locationerror',()=>{
-      located=false;
-      if(fallbackTimer){ clearTimeout(fallbackTimer); fallbackTimer=null; }
+    map.on('locationerror', () => {
+      located = false;
+      if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
       showLocateError();
     });
 
-    // ===== iOS 스타일 모달 제어 =====
-    const modal=document.getElementById('locateModal');
-    const btnRetry=document.getElementById('locateRetry');
-    const btnClose=document.getElementById('locateClose');
-
-    function showLocateError(){
-      modal.style.display='flex';
+    /* ===== iOS 스타일 모달 제어 ===== */
+    const modal = document.getElementById('locateModal');
+    const btnRetry = document.getElementById('locateRetry');
+    const btnClose = document.getElementById('locateClose');
+    function showLocateError() {
+      modal.style.display = 'flex';
       document.body.classList.remove('locating');
       map.fitBounds(gateBounds);
-      setTimeout(()=>map.invalidateSize(),50);
+      setTimeout(() => map.invalidateSize(), 50);
     }
-    function hideLocateError(){ modal.style.display='none'; }
-
-    btnRetry.addEventListener('click',e=>{
+    function hideLocateError() { modal.style.display = 'none'; }
+    btnRetry.addEventListener('click', (e) => {
       e.preventDefault(); hideLocateError();
-      located=false; if(fallbackTimer){ clearTimeout(fallbackTimer); }
+      located = false; if (fallbackTimer) { clearTimeout(fallbackTimer); }
       startLocate();
     });
-    btnClose.addEventListener('click',e=>{
-      e.preventDefault(); hideLocateError();
-    });
+    btnClose.addEventListener('click', (e) => { e.preventDefault(); hideLocateError(); });
 
-    // ===== 내 위치 버튼 (네비게이션 아이콘) =====
-    const LocateControl=L.Control.extend({
-      onAdd:function(){
-        const c=L.DomUtil.create('div','leaflet-control-locate leaflet-bar');
-        const b=L.DomUtil.create('button','',c);
-        b.title='내 위치 찾기'; b.setAttribute('aria-label','내 위치 찾기');
-        b.innerHTML=`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 3.5L10 14l-1 6 4-3 8.5-13.5z" stroke-width="2" stroke-linejoin="round"></path><path d="M21.5 3.5L3 11l7 3 11.5-10.5z" stroke-width="2" stroke-linejoin="round"></path></svg>`;
+    /* ===== 내 위치 버튼 (네비 아이콘) ===== */
+    const LocateControl = L.Control.extend({
+      onAdd: function () {
+        const c = L.DomUtil.create('div', 'leaflet-control-locate leaflet-bar');
+        const b = L.DomUtil.create('button', '', c);
+        b.title = '내 위치 찾기'; b.setAttribute('aria-label', '내 위치 찾기');
+        b.innerHTML = `
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21.5 3.5L10 14l-1 6 4-3 8.5-13.5z" stroke-width="2" stroke-linejoin="round"></path>
+            <path d="M21.5 3.5L3 11l7 3 11.5-10.5z" stroke-width="2" stroke-linejoin="round"></path>
+          </svg>`;
         L.DomEvent.disableClickPropagation(c);
-        L.DomEvent.on(b,'click',(e)=>{ e.preventDefault(); hideLocateError(); located=false; if(fallbackTimer){clearTimeout(fallbackTimer);} startLocate(); });
+        L.DomEvent.on(b, 'click', (e) => {
+          e.preventDefault(); hideLocateError();
+          located = false; if (fallbackTimer) { clearTimeout(fallbackTimer); }
+          startLocate();
+        });
         return c;
-      }, onRemove:function(){}
+      }, onRemove: function () {}
     });
     map.addControl(new LocateControl({ position:'topleft' }));
 
-    // ===== 경고창 테스트 버튼 (Locate 아래에 쌓임) =====
-    const AlertTestControl=L.Control.extend({
-      onAdd:function(){
-        const c=L.DomUtil.create('div','leaflet-control-alerttest leaflet-bar');
-        const b=L.DomUtil.create('button','',c);
+    /* ===== 경고창 테스트 버튼 ===== */
+    const AlertTestControl = L.Control.extend({
+      onAdd: function () {
+        const c = L.DomUtil.create('div','leaflet-control-alerttest leaflet-bar');
+        const b = L.DomUtil.create('button','',c);
         b.title='경고창 테스트'; b.setAttribute('aria-label','경고창 테스트');
-        b.textContent='!';
-        b.style.fontWeight='700';
+        b.textContent='!'; b.style.fontWeight='700';
         L.DomEvent.disableClickPropagation(c);
         L.DomEvent.on(b,'click',(e)=>{ e.preventDefault(); showLocateError(); });
         return c;
-      }, onRemove:function(){}
+      }, onRemove: function () {}
     });
     map.addControl(new AlertTestControl({ position:'topleft' }));
 
-    // 제스처 비활성화 대비
-    map.whenReady(()=>{
-      if(!map.options.scrollWheelZoom) map.scrollWheelZoom.enable();
-      if(!map.options.touchZoom) map.touchZoom.enable();
-      if(!map.options.dragging) map.dragging.enable();
-    });
+    /* ===== 회전/주소창 크기 변화 대응 ===== */
+    const handleResize = () => { setTimeout(() => map.invalidateSize(), 80); };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
   </script>
 </body>
 </html>
