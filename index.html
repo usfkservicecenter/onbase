@@ -21,9 +21,24 @@
       padding-left: max(16px, env(safe-area-inset-left));
       padding-right: max(16px, env(safe-area-inset-right));
       padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb; background: #fff;
+    }
+    /* 검색 결과 패널 */
+    .results {
+      display: none; /* 검색어 없을 때 숨김 */
+      max-height: 35vh; /* 너무 길어지면 스크롤 */
+      overflow: auto;
       border-bottom: 1px solid #e5e7eb;
       background: #fff;
     }
+    .result-item {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 10px 16px; font-size: 14px; cursor: pointer;
+    }
+    .result-item:hover { background: #f9fafb; }
+    .result-label { font-weight: 600; color: #111827; }
+    .result-sub   { font-size: 12px; color: #6b7280; }
+
     #map { flex: 1; min-height: 0; }
 
     /* ===== 라벨 ===== */
@@ -55,35 +70,26 @@
 </head>
 <body>
   <div class="app">
-    <!-- 상단 헤더: 제목 + 검색/필터 -->
+    <!-- 상단 헤더: 제목 + 검색 -->
     <header class="app-header">
       <div class="flex flex-col gap-2">
         <h1 class="text-base font-semibold text-gray-900">OnBase USAG Humphreys 건물 지도</h1>
         <div class="flex flex-wrap items-center gap-2">
-          <!-- 검색 인풋 -->
           <div class="flex items-center gap-2">
             <input id="searchInput" type="search" inputmode="search" placeholder="건물번호 또는 이름 검색"
                    class="w-64 max-w-[70vw] rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                    autocomplete="off" />
             <button id="clearBtn" class="rounded-md border border-gray-300 px-2.5 py-2 text-sm text-gray-700 hover:bg-gray-100">초기화</button>
           </div>
-          <!-- 매치 방식 -->
-          <label class="text-sm text-gray-600">매치:
-            <select id="matchMode" class="ml-1 rounded-md border border-gray-300 px-2 py-2 text-sm">
-              <option value="contains">포함</option>
-              <option value="starts">시작</option>
-              <option value="equals">정확히</option>
-            </select>
-          </label>
-          <!-- 자동줌 -->
-          <label class="flex items-center gap-1 text-sm text-gray-600">
-            <input id="autoZoom" type="checkbox" class="h-4 w-4"> 자동줌
-          </label>
-          <!-- 결과 요약 -->
           <span id="resultCount" class="text-sm text-gray-500"></span>
         </div>
       </div>
     </header>
+
+    <!-- 검색 결과 목록 패널 -->
+    <div id="resultsPanel" class="results">
+      <ul id="resultsList"></ul>
+    </div>
 
     <!-- 지도 -->
     <div id="map"></div>
@@ -150,31 +156,26 @@
 
     /* ===== 라벨/검색 ===== */
     const buildingMarkers = [];
-    let dataset = []; // {lat, lon, label, marker, visibleByFilter}
+    let dataset = []; // {lat, lon, label, marker, visibleByFilter, name?}
     const LABEL_ZOOM = 15;
 
     function normalize(s){ return (s ?? '').toString().trim(); }
-    function matchLabel(label, q, mode){
-      if (!q) return true;
-      const L = label.toLowerCase(); const Q = q.toLowerCase();
-      if (mode === 'starts') return L.startsWith(Q);
-      if (mode === 'equals') return L === Q;
-      return L.includes(Q); // contains
-    }
 
     function applyFilters(){
-      const q = normalize(document.getElementById('searchInput').value);
-      const mode = document.getElementById('matchMode').value;
-      let count=0;
+      const q = normalize(document.getElementById('searchInput').value).toLowerCase();
+      let results = [];
       dataset.forEach(it=>{
-        const ok = matchLabel(it.label, q, mode);
+        const ok = !q || it.label.toLowerCase().includes(q);
         it.visibleByFilter = ok;
-        if (ok) count++;
+        if (ok && q) results.push(it);
       });
-      document.getElementById('resultCount').textContent =
-        q ? `결과: ${count}개` : '';
-      updateBuildingLabels(); // 필터 반영하여 표시 업데이트
-      return count;
+      document.getElementById('resultCount').textContent = q ? `결과: ${results.length}개` : '';
+
+      // 라벨 표시 갱신
+      updateBuildingLabels();
+
+      // 결과 패널 렌더
+      renderResults(q ? results : []);
     }
 
     function updateBuildingLabels() {
@@ -199,27 +200,62 @@
         const marker = L.marker([lat, lon], {
           icon: L.divIcon({ className: 'building-label', html: label, iconSize: [26, 12], iconAnchor: [13, 6] })
         });
-        dataset.push({ lat, lon, label, marker, visibleByFilter: true });
+        dataset.push({ lat, lon, label, name: b.name ?? "", marker, visibleByFilter: true });
       });
-      applyFilters(); // 초기 적용
+      applyFilters(); // 초기 갱신
     });
 
-    /* ====== 검색 UI 동작 ====== */
-    // 입력 디바운스
-    function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
-    const onQueryChange = debounce(()=>{
-      const n = applyFilters();
-      if (n > 0 && document.getElementById('autoZoom').checked){
-        const first = dataset.find(it => it.visibleByFilter);
-        if (first){
-          map.flyTo([first.lat, first.lon], Math.max(map.getZoom(), 17), { duration: 0.8 });
-        }
-      }
-    }, 200);
+    /* ===== 결과 패널 렌더링 ===== */
+    function renderResults(items){
+      const panel = document.getElementById('resultsPanel');
+      const list  = document.getElementById('resultsList');
+      list.innerHTML = '';
 
+      if (!items.length){
+        const q = normalize(document.getElementById('searchInput').value);
+        if (q){
+          panel.style.display = 'block';
+          const li = document.createElement('li');
+          li.className = 'result-item';
+          li.innerHTML = `<span class="result-sub">검색 결과 없음</span>`;
+          list.appendChild(li);
+        } else {
+          panel.style.display = 'none';
+        }
+        setTimeout(()=>map.invalidateSize(), 40);
+        return;
+      }
+
+      // 결과 너무 많으면 200개까지만 표시
+      const MAX_SHOW = 200;
+      const sliced = items.slice(0, MAX_SHOW)
+        .sort((a,b)=> a.label.localeCompare(b.label, 'ko'));
+
+      sliced.forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'result-item';
+        li.innerHTML = `
+          <span class="result-label">${it.label}</span>
+          ${it.name ? `<span class="result-sub">${it.name}</span>` : ''}
+        `;
+        li.addEventListener('click', ()=>{
+          // 결과 클릭 시 이동 + 충분히 확대
+          map.flyTo([it.lat, it.lon], Math.max(map.getZoom(), 17), { duration: 0.8 });
+          // 클릭 후 패널 접기(선택)
+          // document.getElementById('searchInput').value = '';
+          // applyFilters();
+        });
+        list.appendChild(li);
+      });
+
+      panel.style.display = 'block';
+      setTimeout(()=>map.invalidateSize(), 40);
+    }
+
+    /* ===== 검색 UI 동작 ===== */
+    function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; }
+    const onQueryChange = debounce(applyFilters, 160);
     document.getElementById('searchInput').addEventListener('input', onQueryChange);
-    document.getElementById('matchMode').addEventListener('change', onQueryChange);
-    document.getElementById('autoZoom').addEventListener('change', onQueryChange);
     document.getElementById('clearBtn').addEventListener('click', ()=>{
       document.getElementById('searchInput').value = '';
       applyFilters();
